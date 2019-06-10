@@ -1,0 +1,75 @@
+body .card {
+    margin-bottom: 20px;
+}
+
+.list-group {
+    margin: 0;
+}
+
+.pos-right {
+    position: absolute;
+    right: 10px;
+    top: 9px;
+}
+
+.dropdown {
+    margin-top: 1px;
+    right: 10px;
+    position: absolute;
+}
+
+.dropdown-menu {
+    padding: 5px 3px 5px 3px;
+}
+
+.tabs h1 {
+    padding: 0px 15px;
+    font-size: 25px;
+    line-height: 20px;
+    color: #777;
+    margin-top: 0.3em;
+}
+
+.tabs {
+    background-color: #f7f7f9;
+    border-bottom: 1px solid #ddd;
+    padding-top: 8px;
+    margin-bottom: 20px;
+}
+
+.nav-tabs {
+    border-bottom-width: 0;
+}
+
+.nav-tabs li a {
+    color: #555;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.1);
+}
+
+.modal-content {
+    padding: 5px 5px 5px 5px;
+}
+
+.close {
+    position: absolute;
+    margin: -10px 0 0 1px;
+    font-size: 18px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

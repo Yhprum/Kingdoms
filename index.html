@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kingdoms</title>
+      <link href="css/bootstrap.min.css" rel="stylesheet">
+      <link href="css/home.css" rel="stylesheet">
+      <link href="css/chat.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="tabs">
+      <ul class="container nav nav-tabs" id="tabList">
+        <li><h1>Yhprum</h1></li>
+        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#rules">Rules</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#gandalf">About</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#chat">Chat</a></li>
+        <a class="dropdown" id="loginDropdown">
+          <button role="button" id="headerButton" data-toggle="dropdown">Log In</button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li id="headerDropdown">Username:
+              <input id="username" type="text">
+              <button role="button" id="login">Submit</button>
+            </li>
+          </ul>
+        </a>
+      </ul>
+    </div>
+    
+    <div class="tab-content" id="tabContent">
+      <div id="home" class="tab-pane fade in show active container">
+        <div class="text-center">
+          <h1>Kingdoms</h1>
+          <p class="lead">v0.1.0</p>
+        </div>
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                Online Users
+              </div>
+              <div class="card-block">
+                <ul id="online" class="list-group">
+                </ul>
+              </div>
+            </div> 
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                Challenges
+              </div>
+              <div class="card-block">
+                <ul id="challenges" class="list-group">
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                Ongoing Battles
+              </div>
+              <div class="card-block">
+                <ul id="battles" class="list-group">
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="rules" class="tab-pane fade container">
+        <div class="text-center">
+          <h1>Rules</h1>
+          <p class="lead">v0.1.0</p>
+        </div>
+        <hr>
+        <h2>Placeholder</h2>
+        <p>
+          <b>Placeholder</b> - Placeholder<br>
+          <b>Placeholder</b> - Placeholder<br>
+          <b>Placeholder</b> - Placeholder
+        </p>
+        <h2>Placeholder</h2>
+        <p>
+          <b>Placeholder</b> - Placeholder<br>
+          <b>Placeholder</b> - Placeholder
+        </p>
+      </div>
+      <div id="gandalf" class="tab-pane fade">
+        <div align="center">
+          <!-- <img src="http://i.imgur.com/0tykmxD.gif" alt="HTML5 Icon" style="width:522px;height:216px;"> -->
+        </div>
+      </div>
+      <div id="chat" class="tab-pane fade container">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                Rooms
+              </div>
+              <div class="card-block">
+                <div id="chatrooms" class="list-group">
+                  <a href="#lobby" name="Lobby" class="list-group-item list-group-item-action flex-column align-items-start active" data-toggle="tab">
+                    <span class="badge badge-default badge-pill float-right" id="badgeLobby">0</span>
+                    <h4 class="list-group-item-heading">Lobby</h4>
+                    <p class="list-group-item-text">The main chat room</p>
+                  </a>
+                  <a href="#suggestions" name="Suggestions" class="list-group-item list-group-item-action flex-column align-items-start" data-toggle="tab" >
+                    <span class="badge badge-default badge-pill" id="badgeSuggestions">0</span>
+                    <h4 class="list-group-item-heading">Suggestions</h4>
+                    <p class="list-group-item-text">Leave any feature request/bugs you find here</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                Users in this room
+              </div>
+              <div class="card-block">
+                <!-- display users in room -->
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <div class="card chat-card">
+              <div class="card-header" id="chatroomName">
+                Lobby
+              </div>
+              <div class="card-block" id="scrollChat">
+                <div class="tab-content">
+                  <div class="tab-pane fade in active show" id="lobby">
+                    <ul class="messages" id="messagesLobby">
+                    </ul>
+                  </div>
+                  <div class="tab-pane fade" id="suggestions">
+                    <ul class="messages" id="messagesSuggestions">
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <form class="form-inline" id="chatForm">
+                  <div class="input-group">
+                      <input class="form-control" type="text" id="chatroomInput" autocomplete="off" placeholder="Sign in to chat" disabled>
+                      <span class="input-group-btn">
+                        <button role="button" class="btn" type="submit">Send</button>
+                      </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+.left {float: left;}
+
+.right {float: right;}
+
+.box {
+    border: 1px solid #AAAAAA;
+}
+
+.battle {
+    position: relative;
+    width: 640px;
+    height: 360px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+    -webkit-transform-origin: top left;
+}
+
+.history .table thead th {
+    border-top: 0;
+}
+
+.history {
+    position: absolute;
+    top: 50px;
+    left: 640px;
+    right: 0;
+    bottom: 40px;
+    height: auto;
+    width: auto;
+    word-wrap: break-word;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+    overflow-y: scroll;
+}
+
+.chatbox {
+    position: absolute;
+    bottom: 0;
+    left: 640px;
+    right: 0;
+    height: 40px;
+    border-bottom: 0;
+    border-right: 0;
+    padding-top: 7px;
+    padding-left: 7px;
+}
+
+.chat-name {
+    width: 86px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+.chat-input {
+    position: absolute;
+    right: 7px;
+    left: 100px;
+    bottom: 4px;
+}
+
+#turnNumber {
+    position: absolute;
+    left: 10px;
+    font-size: 150%;
+    padding: 0px 5px 0px 5px;
+}
+
+#nextMove {
+     margin: 10px;
+}
+
+#timer {
+    position: absolute;
+    left: 430px;
+    width: 200px;
+    height: 40px;
+    border:1px solid #000000;
+    margin-top: 10px;
+}
+
+.cards {
+    clear: both;
+    cursor: pointer;
+}
+
+.barno img {
+    border:1px solid #000000;
+    border-radius: 16px;
+    width: 100px;
+    height: 160px;
+}
+
+.cards img:hover {
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+}
+
+body .barno {
+    margin-top: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 10px;
+}
+
+.actions {
+    clear: both;
+}
+
+body .action {
+    float: left;
+    margin-top: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 3px;
+    padding-top: 25px;
+    width: 206px;
+    height: 80px;
+    background: #ccdfff;
+}
+
+.actions .card {
+    text-align: center;
+    cursor: pointer;
+}
+
+.actions .card:hover {
+    border-width: 2px;
+}
+
+.turn-row {
+    background-color: #f9f9f9;
+}
+
+.turn {
+    font-size: 150%;
+}
+
+#history td {
+    border-top: 0;
+    padding: 0px 0px 0px 8px;
+}
+
+#history .turn-row td {
+    padding: 8px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}

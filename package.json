@@ -1,0 +1,23 @@
+{
+  "name": "kingdoms",
+  "version": "0.1.0",
+  "description": "A multiplayer card battling game",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yhprum/Kingdoms.git"
+  },
+  "author": "Ryan Murphy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yhprum/Kingdoms/issues"
+  },
+  "homepage": "https://github.com/Yhprum/Kingdoms#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.2.0"
+  }
+}

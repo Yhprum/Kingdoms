@@ -1,0 +1,41 @@
+body .list-group-item.active {
+    background-color: lightgrey;
+    color: lightgrey;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+body .list-group-item.active .list-group-item-heading, .list-group-item.active .list-group-item-text {
+    color: #292b2c;
+}
+
+.chat-card .card-block {
+    padding: 0px;
+    height: 500px;
+    overflow-y: scroll;
+}
+
+.messages {
+    list-style-type: none; margin: 0; padding: 0;
+}
+
+.messages li {
+    padding: 0px 10px;
+
+}
+
+.timestamp {
+    color: silver;
+}
+
+#chatForm .input-group {
+    width: 100%;
+}
+
+.badge {
+    position: absolute;
+    right: 20px;
+}
+
+.list-group-item p {
+    margin-bottom: auto;
+}
