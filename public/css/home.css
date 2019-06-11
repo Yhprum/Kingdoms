@@ -1,3 +1,7 @@
+.left {float: left;}
+
+.right {float: right;}
+
 body .card {
     margin-bottom: 20px;
 }

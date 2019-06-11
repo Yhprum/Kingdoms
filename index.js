@@ -96,6 +96,15 @@ io.on('connection', function(socket) {
         io.to(usernames[[name]]).emit('chatroom message', r, room);
     }
 
+    socket.on('create room', function (name) {
+        rooms[name] = {
+            "players" : [name]
+        };
+        socket.join(name);
+        io.emit('rooms', rooms);
+        console.log(name + " created room " + name);
+    });
+
     socket.on('challenge', function(opponentName, challenger) {
         io.to(usernames[[opponentName]]).emit('challenge', challenger);
     });
@@ -113,10 +122,15 @@ io.on('connection', function(socket) {
         rooms[[opponentName]]["gameNumber"] = gameNumber++;
     });
 
-    socket.on('join room', function(roomname) {
+    socket.on('join room', function(name, roomname) {
         socket.join(roomname);
-        io.to(usernames[socket.username]).emit('start game', rooms[[roomname]].gameNumber);
+        rooms[roomname]["players"].push(name);
         io.emit('battles', rooms);
+        console.log(name + " joined room " + roomname);
+    });
+
+    socket.on('start', function (roomname) {
+        io.to(roomname).emit('start game', rooms[[roomname]].gameNumber);
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language

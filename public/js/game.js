@@ -69,23 +69,16 @@ $(document).ready(function() {
             unread[[chatroom]] = 0;
         });
 
+        $("#create").click(function () {
+            socket.emit('create room', name);
+        });
+
         socket.on('users', function(usernames) { // update user list
             $("#online").empty();
             for (var username in usernames) {
                 if (usernames.hasOwnProperty(username)) {
                     if (username != name) {
-                        $("#online").append("<li class='list-group-item'>" + username + "<button id='chal" + username + "' class='pos-right'>Request</button></li>");
-                        $("#chal" + username).on('click', function() {
-                            opponent = this.id.substring(4, this.id.length);
-                            socket.emit('challenge', opponent, name);
-                            $("#chal" + opponent).hide();
-                            $("#challenges").append("<li class='list-group-item'>To: " + opponent + "<button id=cancel" + opponent + " class='pos-right'>Cancel</button></li>");
-                            $("#cancel" + opponent).on('click', function() {
-                                this.parentNode.remove();
-                                $("#chal" + opponent).show();
-                                socket.emit('cancel', opponent, name);
-                            });
-                        });
+                        $("#online").append("<li class='list-group-item'>" + username + "</li>");
                     } else {
                         //$("#online").append("<li class='list-group-item'>" + username + "</li>")
                     }
@@ -93,39 +86,16 @@ $(document).ready(function() {
             }
         });
 
-        socket.on('battles', function(rooms) { // update ongoing battles list
-            $("#battles").empty();
+        socket.on('rooms', function(rooms) { // update room list
+            $("#challenges").empty();
             for (var room in rooms) {
                 if (rooms.hasOwnProperty(room)) {
-                    var battleTitle = rooms[[room]].players[0] + " vs. " + rooms[[room]].players[1];
-                    $("#battles").append("<li class='list-group-item'>" + battleTitle + "<button id='batl" + room + "' class='pos-right'>Spectate</button></li>");
-                    $("#batl" + room).on('click', function() {
-                        alert("Currently not supported");
+                    $("#challenges").append("<li class='list-group-item'>" + room + "<button id='room" + room + "' class='pos-right'>Join Room</button></li>");
+                    $("#room" + room).on('click', function() {
+                        socket.emit('join room', name, room);
                     });
                 }
             }
-        });
-
-        socket.on('challenge', function(opponentName) {
-            $("#challenges").append("<li class='list-group-item'>" + opponentName + "<button id=ac" + opponentName + " class='pos-right'>Accept</button></li>");
-            $("#ac" + opponentName).on('click', function() {
-                this.parentNode.remove();
-                roomname = this.id.substring(2, this.id.length);
-                opponent = opponentName;
-                socket.emit('accept', roomname, name, opponent);
-                socket.emit('join room', roomname);
-            });
-        });
-
-        socket.on('cancelled challenge', function(opponentName) {
-            document.getElementById("ac" + opponentName).parentElement.remove();
-        });
-
-        socket.on('accepted challenge', function(opponentName) {
-            opponent = opponentName;
-            document.getElementById("cancel" + opponent).parentElement.remove()
-            socket.emit('join room', name);
-            roomname = name;
         });
 
         socket.on('start game', function(gameNumber) {
