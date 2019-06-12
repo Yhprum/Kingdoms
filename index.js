@@ -96,13 +96,14 @@ io.on('connection', function(socket) {
         io.to(usernames[[name]]).emit('chatroom message', r, room);
     }
 
-    socket.on('create room', function (name) {
-        rooms[name] = {
-            "players" : [name]
+    socket.on('create room', function (name, roomname, size) {
+        rooms[roomname] = {
+            "players" : [name],
+            "size": size
         };
-        socket.join(name);
+        socket.join(roomname);
         io.emit('rooms', rooms);
-        console.log(name + " created room " + name);
+        console.log(name + " created room " + roomname);
     });
 
     socket.on('join room', function(name, roomname, callback) {
@@ -118,6 +119,7 @@ io.on('connection', function(socket) {
     socket.on('leave room', function(name, roomname) {
         socket.leave(roomname);
         rooms[roomname]["players"].splice(rooms[roomname]["players"].indexOf(name), 1);
+        if (rooms[roomname]["players"].length === 0) delete rooms[roomname];
         io.emit('users', usernames);
         io.emit('rooms', rooms);
     });
@@ -149,7 +151,8 @@ io.on('connection', function(socket) {
         delete usernames[socket.username];
         for (var room in rooms) {
             if (rooms.hasOwnProperty(room)) {
-                // Check to see if in a room and remove it
+                rooms[room]["players"].splice(rooms[room]["players"].indexOf(socket.username), 1);
+                if (rooms[room]["players"].length === 0) delete rooms[room];
             }
         }
         io.emit('users', usernames);

@@ -70,8 +70,14 @@ $(document).ready(function() {
         });
 
         $("#create").click(function () {
-            socket.emit('create room', name);
-            roomname = name;
+            $('#createRoomModal').modal("show");
+        });
+
+        $("#createRoom").click(function () {
+            let rn = document.getElementById("roomName").value;
+            let rSize = document.getElementById("numPlayers").value;
+            socket.emit('create room', name, rn, rSize);
+            roomname = rn;
         });
 
         socket.on('users', function(usernames) { // update user list
@@ -91,8 +97,6 @@ $(document).ready(function() {
             $("#challenges").empty();
             for (var room in rooms) {
                 if (rooms.hasOwnProperty(room)) {
-                    // TODO: only show join game button when not in room, maybe have a disabled "Joined" button
-                    // $("#challenges").append("<li class='list-group-item'>" + room + " (" + rooms[room]["players"].length + "/4)</li>");
                     let item = document.createElement("li");
                     item.classList.add("list-group-item");
                     item.innerText = room + " (" + rooms[room]["players"].length + "/4)";

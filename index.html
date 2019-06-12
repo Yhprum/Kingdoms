@@ -155,6 +155,39 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="createRoomModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create Room</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group row">
+              <label for="roomName" class="col-sm-3 col-form-label">Room Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" id="roomName" placeholder="Name's Room">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="numPlayers" class="col-sm-9 col-form-label">Number of Players</label>
+              <div class="col-sm-3">
+                <select class="form-control" id="numPlayers">
+                  <option selected>4</option>
+                  <option>3</option>
+                  <option>2</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="createRoom" type="button" class="btn btn-secondary" data-dismiss="modal">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
