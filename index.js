@@ -22,7 +22,7 @@ io.on('connection', function(socket) {
         usernames[name] = socket.id;
         console.log(name + ' has connected');
         io.emit('users', usernames);
-        io.emit('battles', rooms);
+        io.emit('rooms', rooms);
     });
 
     socket.on('chatroom message', function(name, msg, room) { // TODO: sanitize for HTML input, add a roomname param and only send to that room
@@ -105,33 +105,29 @@ io.on('connection', function(socket) {
         console.log(name + " created room " + name);
     });
 
-    socket.on('join room', function(name, roomname) {
+    socket.on('join room', function(name, roomname, callback) {
         if (!rooms[roomname]["players"].includes(name) && rooms[roomname]["players"].length < 4) {
             socket.join(roomname);
             rooms[roomname]["players"].push(name);
+            callback(true);
             io.emit('rooms', rooms);
             console.log(name + " joined room " + roomname);
         }
     });
 
-    socket.on('challenge', function(opponentName, challenger) {
-        io.to(usernames[[opponentName]]).emit('challenge', challenger);
+    socket.on('leave room', function(name, roomname) {
+        socket.leave(roomname);
+        rooms[roomname]["players"].splice(rooms[roomname]["players"].indexOf(name), 1);
+        io.emit('users', usernames);
+        io.emit('rooms', rooms);
     });
 
-    socket.on('cancel', function(opponentName, name) {
-        io.to(usernames[[opponentName]]).emit('cancelled challenge', name);
-    });
-
-    socket.on('accept', function(opponentName, name) {
-        io.to(usernames[[opponentName]]).emit('accepted challenge', name);
+    socket.on('start', function (roomname) {
         rooms[[opponentName]] = {};
         rooms[[opponentName]]['turn'] = 1;
         rooms[[opponentName]]['history'] = '';
         rooms[[opponentName]]['players'] = [opponentName, name];
         rooms[[opponentName]]["gameNumber"] = gameNumber++;
-    });
-
-    socket.on('start', function (roomname) {
         io.to(roomname).emit('start game', rooms[[roomname]].gameNumber);
     });
 
@@ -148,26 +144,16 @@ io.on('connection', function(socket) {
         io.emit('battles', rooms);
     });
 
-    socket.on('leave room', function(roomname) {
-        socket.leave(roomname);
-        if(rooms[roomname]) delete rooms[roomname];
-        io.emit('users', usernames);
-        io.emit('battles', rooms);
-    });
-
     socket.on('disconnect', function(){
         console.log(socket.username + ' has disconnected');
         delete usernames[socket.username];
         for (var room in rooms) {
             if (rooms.hasOwnProperty(room)) {
-                if (socket.username == rooms[[room]].players[0] || socket.username == rooms[[room]].players[1]) {
-                    delete rooms[room];
-                    break;
-                }
+                // Check to see if in a room and remove it
             }
         }
         io.emit('users', usernames);
-        io.emit('battles', rooms);
+        io.emit('rooms', rooms);
     });
 });
 

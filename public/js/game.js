@@ -51,7 +51,7 @@ $(document).ready(function() {
         socket.emit('login', name);
         let dropdownItems = '<a class="dropdown-item" href="#">Profile</a>';
         dropdownItems += '<a class="dropdown-item" href="#">Placeholder</a>';
-        dropdownItems += '<a class="dropdown-item" href="#">Placeholder</a>'
+        dropdownItems += '<a class="dropdown-item" href="#">Placeholder</a>';
         document.getElementById("headerButton").innerHTML = name;
         document.getElementById("headerButton").classList = "dropdown-toggle";
         document.getElementById("headerDropdown").innerHTML = dropdownItems;
@@ -71,6 +71,7 @@ $(document).ready(function() {
 
         $("#create").click(function () {
             socket.emit('create room', name);
+            roomname = name;
         });
 
         socket.on('users', function(usernames) { // update user list
@@ -91,9 +92,30 @@ $(document).ready(function() {
             for (var room in rooms) {
                 if (rooms.hasOwnProperty(room)) {
                     // TODO: only show join game button when not in room, maybe have a disabled "Joined" button
-                    $("#challenges").append("<li class='list-group-item'>" + room + " (" + rooms[room]["players"].length + "/4)<button id='room" + room + "' class='pos-right'>Join Room</button></li>");
+                    // $("#challenges").append("<li class='list-group-item'>" + room + " (" + rooms[room]["players"].length + "/4)</li>");
+                    let item = document.createElement("li");
+                    item.classList.add("list-group-item");
+                    item.innerText = room + " (" + rooms[room]["players"].length + "/4)";
+                    let join = document.createElement("button");
+                    join.classList.add("pos-right");
+                    join.id = "room" + room;
+                    if (room != roomname) {
+                        join.innerText = "Join Room";
+                    } else {
+                        join.innerText = "Leave Room";
+                    }
+                    item.appendChild(join);
+                    document.getElementById("challenges").appendChild(item);
                     $("#room" + room).on('click', function() {
-                        socket.emit('join room', name, room);
+                        let rn = this.id.substring(4, this.id.length);
+                        if (roomname != rn) {
+                            socket.emit('join room', name, rn, function (callback) {
+                                if (callback) roomname = rn;
+                            });
+                        } else {
+                            socket.emit('leave room', name, rn);
+                            roomname = "";
+                        }
                     });
                 }
             }
