@@ -90,7 +90,8 @@ $(document).ready(function() {
             $("#challenges").empty();
             for (var room in rooms) {
                 if (rooms.hasOwnProperty(room)) {
-                    $("#challenges").append("<li class='list-group-item'>" + room + "<button id='room" + room + "' class='pos-right'>Join Room</button></li>");
+                    // TODO: only show join game button when not in room, maybe have a disabled "Joined" button
+                    $("#challenges").append("<li class='list-group-item'>" + room + " (" + rooms[room]["players"].length + "/4)<button id='room" + room + "' class='pos-right'>Join Room</button></li>");
                     $("#room" + room).on('click', function() {
                         socket.emit('join room', name, room);
                     });

@@ -105,6 +105,15 @@ io.on('connection', function(socket) {
         console.log(name + " created room " + name);
     });
 
+    socket.on('join room', function(name, roomname) {
+        if (!rooms[roomname]["players"].includes(name) && rooms[roomname]["players"].length < 4) {
+            socket.join(roomname);
+            rooms[roomname]["players"].push(name);
+            io.emit('rooms', rooms);
+            console.log(name + " joined room " + roomname);
+        }
+    });
+
     socket.on('challenge', function(opponentName, challenger) {
         io.to(usernames[[opponentName]]).emit('challenge', challenger);
     });
@@ -120,13 +129,6 @@ io.on('connection', function(socket) {
         rooms[[opponentName]]['history'] = '';
         rooms[[opponentName]]['players'] = [opponentName, name];
         rooms[[opponentName]]["gameNumber"] = gameNumber++;
-    });
-
-    socket.on('join room', function(name, roomname) {
-        socket.join(roomname);
-        rooms[roomname]["players"].push(name);
-        io.emit('battles', rooms);
-        console.log(name + " joined room " + roomname);
     });
 
     socket.on('start', function (roomname) {
