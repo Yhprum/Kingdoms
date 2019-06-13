@@ -96,14 +96,20 @@ io.on('connection', function(socket) {
         io.to(usernames[[name]]).emit('chatroom message', r, room);
     }
 
-    socket.on('create room', function (name, roomname, size) {
-        rooms[roomname] = {
-            "players" : [name],
-            "size": size
-        };
-        socket.join(roomname);
-        io.emit('rooms', rooms);
-        console.log(name + " created room " + roomname);
+    socket.on('create room', function (name, roomname, size, callback) {
+        if (!rooms[roomname]) {
+            rooms[roomname] = {
+                "players" : [name],
+                "size": size,
+                "inProgress": false
+            };
+            socket.join(roomname);
+            callback(true);
+            io.emit('rooms', rooms);
+            console.log(name + " created room " + roomname);
+        } else {
+            callback(false);
+        }
     });
 
     socket.on('join room', function(name, roomname, callback) {
@@ -119,17 +125,17 @@ io.on('connection', function(socket) {
     socket.on('leave room', function(name, roomname) {
         socket.leave(roomname);
         rooms[roomname]["players"].splice(rooms[roomname]["players"].indexOf(name), 1);
-        if (rooms[roomname]["players"].length === 0) delete rooms[roomname];
+        if (rooms[roomname]["players"].length === 0) delete rooms[roomname]; // TODO: this crashes the game if socket disconnects
         io.emit('users', usernames);
         io.emit('rooms', rooms);
     });
 
     socket.on('start', function (roomname) {
-        rooms[[opponentName]] = {};
-        rooms[[opponentName]]['turn'] = 1;
-        rooms[[opponentName]]['history'] = '';
-        rooms[[opponentName]]['players'] = [opponentName, name];
-        rooms[[opponentName]]["gameNumber"] = gameNumber++;
+        rooms[[roomname]]["inProgress"] = true;
+        rooms[[roomname]]['turn'] = 1;
+        rooms[[roomname]]['history'] = '';
+        rooms[[roomname]]["gameNumber"] = gameNumber++;
+        io.emit('rooms', rooms);
         io.to(roomname).emit('start game', rooms[[roomname]].gameNumber);
     });
 

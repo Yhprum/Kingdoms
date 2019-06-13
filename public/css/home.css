@@ -65,14 +65,14 @@ body .card {
     padding: 5px 5px 5px 5px;
 }
 
-.close {
+.close-game {
     position: absolute;
     margin: -10px 0 0 1px;
     font-size: 18px;
 }
 
-.close:hover,
-.close:focus {
+.close-game:hover,
+.close-game:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;

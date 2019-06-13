@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var name, opponent;
+    var name;
     var roomname = "";
     var socket;
     var chatroom = "Lobby";
@@ -70,14 +70,22 @@ $(document).ready(function() {
         });
 
         $("#create").click(function () {
-            $('#createRoomModal').modal("show");
+            if (roomname === "")
+                $('#createRoomModal').modal("show");
         });
 
         $("#createRoom").click(function () {
-            let rn = document.getElementById("roomName").value;
-            let rSize = document.getElementById("numPlayers").value;
-            socket.emit('create room', name, rn, rSize);
-            roomname = rn;
+            if (roomname === "") {
+                let rn = document.getElementById("roomName").value;
+                let rSize = document.getElementById("numPlayers").value;
+                socket.emit('create room', name, rn, rSize, function (callback) {
+                    if (callback) {
+                        roomname = rn;
+                    } else {
+                        alert("Error: room name already exists");
+                    }
+                });
+            }
         });
 
         socket.on('users', function(usernames) { // update user list
@@ -96,11 +104,12 @@ $(document).ready(function() {
         socket.on('rooms', function(rooms) { // update room list
             $("#challenges").empty();
             for (var room in rooms) {
-                if (rooms.hasOwnProperty(room)) {
+                if (rooms.hasOwnProperty(room) && !rooms[room]["inProgress"]) {
                     let item = document.createElement("li");
                     item.classList.add("list-group-item");
                     item.innerText = room + " (" + rooms[room]["players"].length + "/" + rooms[room]["size"] + ")";
                     let join = document.createElement("button");
+
                     join.classList.add("pos-right");
                     join.id = "room" + room;
                     if (room !== roomname) {
@@ -112,6 +121,18 @@ $(document).ready(function() {
                         join.innerText = "Leave Room";
                     }
                     item.appendChild(join);
+                    if (rooms[room]["players"][0] === name) {
+                        let start = document.createElement("button");
+                        // start.classList.add("pos-right");
+                        start.id = "start" + room;
+                        start.innerText = "Start Game";
+                        start.onclick = (e) => {
+                            e.target.remove();
+                            socket.emit('start', roomname);
+                        };
+                        item.appendChild(start);
+                    }
+
                     document.getElementById("challenges").appendChild(item);
                     $("#room" + room).on('click', function() {
                         let rn = this.id.substring(4, this.id.length);
@@ -131,7 +152,7 @@ $(document).ready(function() {
         socket.on('start game', function(gameNumber) {
             var gameTab = document.createElement("li");
             gameTab.classList = "nav-item";
-            gameTab.innerHTML = "<a class='nav-link' data-toggle='tab' href='#game-" + gameNumber + "'>vs. " + opponent + "<span class='close'>&times;</span></a>"
+            gameTab.innerHTML = "<a class='nav-link' data-toggle='tab' href='#game-" + gameNumber + "'>Game<span class='close-game'>&times;</span></a>"
             document.getElementById("tabList").appendChild(gameTab);
 
             var gameHTML = document.createElement("div");
@@ -156,12 +177,13 @@ $(document).ready(function() {
                     }
                 });
 
-                $(".close").on("click", function() { // close the game tab
+                $(".close-game").on("click", function() { // close the game tab
                     var tabContentId = $(this).parent().attr("href");
                     $(this).parent().parent().remove();
                     $(tabContentId).remove();
                     $('#tabList a[href="#home"]').tab('show');
-                    socket.emit('leave room', roomname);
+                    socket.emit('leave room', name, roomname);
+                    roomname = "";
                 });
             });
         });
