@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var name, opponent;
-    var roomname;
+    var roomname = "";
     var socket;
     var chatroom = "Lobby";
     var $login = $("#login");
@@ -99,12 +99,15 @@ $(document).ready(function() {
                 if (rooms.hasOwnProperty(room)) {
                     let item = document.createElement("li");
                     item.classList.add("list-group-item");
-                    item.innerText = room + " (" + rooms[room]["players"].length + "/4)";
+                    item.innerText = room + " (" + rooms[room]["players"].length + "/" + rooms[room]["size"] + ")";
                     let join = document.createElement("button");
                     join.classList.add("pos-right");
                     join.id = "room" + room;
-                    if (room != roomname) {
+                    if (room !== roomname) {
                         join.innerText = "Join Room";
+                        if (roomname !== "") {
+                            join.setAttribute("disabled", "");
+                        }
                     } else {
                         join.innerText = "Leave Room";
                     }
@@ -112,11 +115,11 @@ $(document).ready(function() {
                     document.getElementById("challenges").appendChild(item);
                     $("#room" + room).on('click', function() {
                         let rn = this.id.substring(4, this.id.length);
-                        if (roomname != rn) {
+                        if (roomname === "") {
                             socket.emit('join room', name, rn, function (callback) {
                                 if (callback) roomname = rn;
                             });
-                        } else {
+                        } else  if (roomname === rn) {
                             socket.emit('leave room', name, rn);
                             roomname = "";
                         }

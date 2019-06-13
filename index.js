@@ -107,7 +107,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('join room', function(name, roomname, callback) {
-        if (!rooms[roomname]["players"].includes(name) && rooms[roomname]["players"].length < 4) {
+        if (!rooms[roomname]["players"].includes(name) && rooms[roomname]["players"].length < rooms[roomname]["size"]) {
             socket.join(roomname);
             rooms[roomname]["players"].push(name);
             callback(true);
