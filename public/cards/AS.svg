@@ -1,0 +1,25 @@
+<svg width="240" height="336" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" class="card">
+ <symbol preserveAspectRatio="xMinYMid" viewBox="-500 -500 1000 1000" id="SA">
+  <path id="svg_1" fill="none" stroke-miterlimit="1.5" stroke-linecap="square" stroke-width="80" stroke="black" d="m-270,460l160,0m-90,-10l200,-910l200,910m-90,10l160,0m-390,-330l240,0"/>
+ </symbol>
+
+ <symbol preserveAspectRatio="xMinYMid" viewBox="-600 -600 1200 1200" id="S">
+  <path id="svg_2" d="m0,-500c100,250 355,400 355,685a150,150 0 0 1 -300,0a10,10 0 0 0 -20,0c0,200 50,215 95,315l-260,0c45,-100 95,-115 95,-315a10,10 0 0 0 -20,0a150,150 0 0 1 -300,0c0,-285 255,-435 355,-685z"/>
+ </symbol>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_3" stroke="black" fill="white" ry="12" rx="12" y="0.5" x="0.5" height="335" width="239"/>
+  <use id="svg_5" stroke-width="50" stroke="white" y="85.6" x="37.6" width="164.8" height="164.8" xlink:href="#S"/>
+  <use id="svg_6" fill="black" y="85.6" x="37.6" width="164.8" height="164.8" xlink:href="#S"/>
+  <use id="svg_10" y="12" x="5.6" width="32" height="32" xlink:href="#SA"/>
+  <use id="svg_11" y="49" x="8.216" width="26.769" height="26.769" xlink:href="#S"/>
+  <g id="svg_12" transform="rotate(180 119.99999999999999,168) ">
+   <use id="svg_13" y="12" x="5.6" width="32" height="32" xlink:href="#SA"/>
+   <use id="svg_14" y="49" x="8.216" width="26.769" height="26.769" xlink:href="#S"/>
+  </g>
+ </g>
+</svg>

@@ -3,7 +3,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require("path");
-
+var Deck = require("./deck.js");
 
 var usernames = {};
 var rooms = {};
@@ -131,10 +131,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('start', function (roomname) {
-        rooms[[roomname]]["inProgress"] = true;
-        rooms[[roomname]]['turn'] = 1;
-        rooms[[roomname]]['history'] = '';
-        rooms[[roomname]]["gameNumber"] = gameNumber++;
+        rooms[roomname]["inProgress"] = true;
+        rooms[roomname]['turn'] = 1;
+        rooms[roomname]['history'] = '';
+        rooms[roomname]["gameNumber"] = gameNumber++;
+        rooms[roomname]["deck"] = new Deck();
         io.emit('rooms', rooms);
         io.to(roomname).emit('start game', rooms[[roomname]].gameNumber);
     });
