@@ -4,27 +4,37 @@ class Room {
         this.players = [];
         this.size = size;
         this.inProgress = false;
+        this.gameNumber = gameNumber++;
+        this.deck = [];
+        this.specials = [];
+    }
+
+    join(username) {
+        if (this.players.length >= this.size) throw new Error(`Room ${roomName} is full`);
+        this.players.push(username);
+    }
+
+    leave(username) {
+        this.players.splice(this.players.indexOf(username), 1);
+        if (this.players.length === 0) deleteRoom(this.roomName);
     }
 }
 
 function getRoom(roomName) {
     if (roomName && roomName.id) return roomName;
-    return Rooms.rooms.get(roomName);
+    return rooms.get(roomName);
 }
 
 function createRoom(roomName, size) {
-    if (Rooms.rooms.has(roomName)) throw new Error(`Room ${roomName} already exists`);
+    if (rooms.has(roomName)) throw new Error(`Room ${roomName} already exists`);
     const room = new Room(roomName, size);
-    Rooms.rooms.set(roomName, room);
+    rooms.set(roomName, room);
     return room;
 }
 
-function joinRoom(roomName, username) {
-    if (Rooms(roomName).players.length >= Rooms(roomName).size) throw new Error(`Room ${roomName} is full`);
-    Rooms(roomName).players.push(username);
-}
-function leaveRoom(roomName, username) {
-
+function deleteRoom(roomName) {
+    if (!rooms.has(roomName)) throw new Error(`Room ${roomName} does not exist`);
+    rooms.delete(roomName);
 }
 
 let gameNumber = 0;
@@ -34,7 +44,7 @@ let Rooms = Object.assign(getRoom, {
     rooms: rooms,
     get: getRoom,
     createRoom: createRoom,
-    joinRoom: joinRoom
+    deleteRoom: deleteRoom
 });
 
 module.exports = Rooms;

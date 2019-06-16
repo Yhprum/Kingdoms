@@ -9,9 +9,6 @@ var User = require("./users.js").User;
 var Users = require("./users.js").Users;
 var Rooms = require("./rooms.js");
 
-var rooms = {};
-var gameNumber = 0;
-
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
@@ -24,7 +21,6 @@ io.on('connection', function(socket) {
         socket.username = username;
         try {
             Users.add(new User(username));
-            console.log(Users.users);
             callback(true);
         } catch (e) {
             // Username taken
@@ -109,6 +105,7 @@ io.on('connection', function(socket) {
     socket.on('create room', function (username, roomName, size, callback) {
         try {
             Rooms.createRoom(roomName, size);
+            Rooms(roomName).join(username);
             socket.join(roomName);
             callback(true);
             io.emit('rooms', mapToObject(Rooms.rooms));
@@ -120,8 +117,9 @@ io.on('connection', function(socket) {
     });
 
     socket.on('join room', function(username, roomName, callback) {
+        console.log("join");
         try {
-            Rooms.joinRoom(roomName, username);
+            Rooms(roomName).join(username);
             socket.join(roomName);
             callback(true);
             io.emit('rooms', mapToObject(Rooms.rooms));
@@ -132,23 +130,19 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('leave room', function(name, roomName) {
+    socket.on('leave room', function(username, roomName) {
+        console.log("leave");
         socket.leave(roomName);
-        // rooms[roomName]["players"].splice(rooms[roomName]["players"].indexOf(name), 1);
-        // if (rooms[roomName]["players"].length === 0) delete rooms[roomName]; // TODO: this crashes the game if socket disconnects
+        Rooms(roomName).leave(username);
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
     socket.on('start', function (roomName) {
-        // rooms[roomName]["inProgress"] = true;
-        // rooms[roomName]['turn'] = 1;
-        // rooms[roomName]['history'] = '';
-        // rooms[roomName]["gameNumber"] = gameNumber++;
-        // rooms[roomName]["deck"] = new Deck("numbers");
-        // rooms[roomName]["specials"] = new Deck("specials");
+        Rooms(roomName).deck = new Deck("numbers"); // TODO:make these hidden from client
+        Rooms(roomName).specials = new Deck("specials");
         io.emit('rooms', mapToObject(Rooms.rooms));
-        io.to(roomName).emit('start game', rooms[[roomName]].gameNumber);
+        io.to(roomName).emit('start game', Rooms(roomName).gameNumber);
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
@@ -156,23 +150,15 @@ io.on('connection', function(socket) {
         io.to(roomname).emit('chat message', msg);
     });
 
-    socket.on('game end', function(roomname, winner) { // TODO: only delete room once everyone leaves?
+    socket.on('game end', function(roomname, winner) {
         let str = winner + " is the winner!";
         io.to(roomname).emit('game end', str);
-        // delete rooms[roomname];
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
     socket.on('disconnect', function(){
         console.log(socket.username + ' has disconnected');
-        // delete usernames[socket.username];
-        // for (var room in rooms) {
-        //     if (rooms.hasOwnProperty(room)) {
-        //         rooms[room]["players"].splice(rooms[room]["players"].indexOf(socket.username), 1);
-        //         if (rooms[room]["players"].length === 0) delete rooms[room];
-        //     }
-        // }
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });
