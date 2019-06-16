@@ -5,7 +5,10 @@ var io = require('socket.io')(http);
 var path = require("path");
 var Deck = require("./deck.js");
 
-var usernames = {};
+var User = require("./users.js").User;
+var Users = require("./users.js").Users;
+var Rooms = require("./rooms.js");
+
 var rooms = {};
 var gameNumber = 0;
 
@@ -17,12 +20,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', function(socket) {
 
-    socket.on('login', function(name) {
-        socket.username = name;
-        usernames[name] = socket.id;
-        console.log(name + ' has connected');
-        io.emit('users', usernames);
-        io.emit('rooms', rooms);
+    socket.on('login', function(username, callback) {
+        socket.username = username;
+        try {
+            Users.add(new User(username));
+            console.log(Users.users);
+            callback(true);
+        } catch (e) {
+            // Username taken
+            callback(false);
+        }
+        console.log(username + ' has connected');
+        io.emit('users', Array.from(Users.users.keys()));
+        io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
     socket.on('chatroom message', function(name, msg, room) { // TODO: sanitize for HTML input, add a roomname param and only send to that room
@@ -96,48 +106,49 @@ io.on('connection', function(socket) {
         io.to(usernames[[name]]).emit('chatroom message', r, room);
     }
 
-    socket.on('create room', function (name, roomname, size, callback) {
-        if (!rooms[roomname]) {
-            rooms[roomname] = {
-                "players" : [name],
-                "size": size,
-                "inProgress": false
-            };
-            socket.join(roomname);
+    socket.on('create room', function (username, roomName, size, callback) {
+        try {
+            Rooms.createRoom(roomName, size);
+            socket.join(roomName);
             callback(true);
-            io.emit('rooms', rooms);
-            console.log(name + " created room " + roomname);
-        } else {
+            io.emit('rooms', mapToObject(Rooms.rooms));
+            console.log(username + " created room " + roomName);
+        } catch (e) {
+            // Room exists
             callback(false);
         }
     });
 
-    socket.on('join room', function(name, roomname, callback) {
-        if (!rooms[roomname]["players"].includes(name) && rooms[roomname]["players"].length < rooms[roomname]["size"]) {
-            socket.join(roomname);
-            rooms[roomname]["players"].push(name);
+    socket.on('join room', function(username, roomName, callback) {
+        try {
+            Rooms.joinRoom(roomName, username);
+            socket.join(roomName);
             callback(true);
-            io.emit('rooms', rooms);
-            console.log(name + " joined room " + roomname);
+            io.emit('rooms', mapToObject(Rooms.rooms));
+            console.log(username + " joined room " + roomName);
+        } catch (e) {
+            // Room full
+            callback(false);
         }
     });
 
-    socket.on('leave room', function(name, roomname) {
-        socket.leave(roomname);
-        rooms[roomname]["players"].splice(rooms[roomname]["players"].indexOf(name), 1);
-        if (rooms[roomname]["players"].length === 0) delete rooms[roomname]; // TODO: this crashes the game if socket disconnects
-        io.emit('users', usernames);
-        io.emit('rooms', rooms);
+    socket.on('leave room', function(name, roomName) {
+        socket.leave(roomName);
+        // rooms[roomName]["players"].splice(rooms[roomName]["players"].indexOf(name), 1);
+        // if (rooms[roomName]["players"].length === 0) delete rooms[roomName]; // TODO: this crashes the game if socket disconnects
+        io.emit('users', Array.from(Users.users.keys()));
+        io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
-    socket.on('start', function (roomname) {
-        rooms[roomname]["inProgress"] = true;
-        rooms[roomname]['turn'] = 1;
-        rooms[roomname]['history'] = '';
-        rooms[roomname]["gameNumber"] = gameNumber++;
-        rooms[roomname]["deck"] = new Deck();
-        io.emit('rooms', rooms);
-        io.to(roomname).emit('start game', rooms[[roomname]].gameNumber);
+    socket.on('start', function (roomName) {
+        // rooms[roomName]["inProgress"] = true;
+        // rooms[roomName]['turn'] = 1;
+        // rooms[roomName]['history'] = '';
+        // rooms[roomName]["gameNumber"] = gameNumber++;
+        // rooms[roomName]["deck"] = new Deck("numbers");
+        // rooms[roomName]["specials"] = new Deck("specials");
+        io.emit('rooms', mapToObject(Rooms.rooms));
+        io.to(roomName).emit('start game', rooms[[roomName]].gameNumber);
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
@@ -148,23 +159,27 @@ io.on('connection', function(socket) {
     socket.on('game end', function(roomname, winner) { // TODO: only delete room once everyone leaves?
         let str = winner + " is the winner!";
         io.to(roomname).emit('game end', str);
-        delete rooms[roomname];
-        io.emit('users', usernames);
-        io.emit('battles', rooms);
+        // delete rooms[roomname];
+        io.emit('users', Array.from(Users.users.keys()));
+        io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
     socket.on('disconnect', function(){
         console.log(socket.username + ' has disconnected');
-        delete usernames[socket.username];
-        for (var room in rooms) {
-            if (rooms.hasOwnProperty(room)) {
-                rooms[room]["players"].splice(rooms[room]["players"].indexOf(socket.username), 1);
-                if (rooms[room]["players"].length === 0) delete rooms[room];
-            }
-        }
-        io.emit('users', usernames);
-        io.emit('rooms', rooms);
+        // delete usernames[socket.username];
+        // for (var room in rooms) {
+        //     if (rooms.hasOwnProperty(room)) {
+        //         rooms[room]["players"].splice(rooms[room]["players"].indexOf(socket.username), 1);
+        //         if (rooms[room]["players"].length === 0) delete rooms[room];
+        //     }
+        // }
+        io.emit('users', Array.from(Users.users.keys()));
+        io.emit('rooms', mapToObject(Rooms.rooms));
     });
+
+    function mapToObject(map) {
+        return Object.assign({}, ...[...map.entries()].map(([k, v]) => ({[k]: v})))
+    }
 });
 
 http.listen(process.env.PORT || 3000, function() {

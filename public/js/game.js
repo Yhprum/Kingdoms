@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var name;
     var roomname = "";
-    var socket;
+    var socket = io();
     var chatroom = "Lobby";
     var $login = $("#login");
     var $usernameInput = $("#username");
@@ -39,7 +39,13 @@ $(document).ready(function() {
     function verify() { // TODO: make sure names can only be letters/numbers (or create escaping method which I don't wanna do)
         name = $usernameInput.val().trim(); // or change all the places where I used the name as an id
         if (name && name.match(/[\w]+/)[0] === name) { // change to server-side?
-            login();
+            socket.emit('login', name, function (callback) {
+                if (callback) {
+                    login();
+                } else {
+                    alert("Name is already in use");
+                }
+            });
         } else {
             // display error
             alert("Names currently can only consist of letters, numbers, and _");
@@ -47,8 +53,6 @@ $(document).ready(function() {
     }
 
     function login() {
-        socket = io();
-        socket.emit('login', name);
         let dropdownItems = '<a class="dropdown-item" href="#">Profile</a>';
         dropdownItems += '<a class="dropdown-item" href="#">Placeholder</a>';
         dropdownItems += '<a class="dropdown-item" href="#">Placeholder</a>';
@@ -90,7 +94,7 @@ $(document).ready(function() {
 
         socket.on('users', function(usernames) { // update user list
             $("#online").empty();
-            for (var username in usernames) {
+            for (let username of usernames) {
                 if (usernames.hasOwnProperty(username)) {
                     if (username != name) {
                         $("#online").append("<li class='list-group-item'>" + username + "</li>");
@@ -103,7 +107,7 @@ $(document).ready(function() {
 
         socket.on('rooms', function(rooms) { // update room list
             $("#challenges").empty();
-            for (var room in rooms) {
+            for (let room in rooms) {
                 if (rooms.hasOwnProperty(room) && !rooms[room]["inProgress"]) {
                     let item = document.createElement("li");
                     item.classList.add("list-group-item");
