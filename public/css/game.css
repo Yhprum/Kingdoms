@@ -125,7 +125,6 @@ body .barno {
 
 .player-area {
     background-color: lightgray;
-    bottom: 0;
     position: absolute;
     right: 20%;
     left: 20%;
@@ -133,6 +132,14 @@ body .barno {
     border-radius: 8px 8px 0 0;
     border-bottom-width: 0;
     height: 15%;
+}
+
+.player-bottom {
+    bottom: 0;
+}
+
+.player-top {
+    transform: rotate(180deg);
 }
 
 .player-area .barno img {

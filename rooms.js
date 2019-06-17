@@ -1,5 +1,12 @@
 let Deck = require("./deck");
 
+let GameState = {
+    "OPEN": 1,
+    "CLOSED": 2,
+    "DISCARD": 3,
+    "DRAW": 4
+};
+
 class Room {
     constructor(roomName, size) {
         this.roomName = roomName;
@@ -10,6 +17,7 @@ class Room {
         this.deck = undefined;
         this.specials = undefined;
         this.hands = {};
+        this.status = {};
     }
 
     join(username) {
@@ -29,7 +37,48 @@ class Room {
         this.specials.shuffle();
         for (let i = this.players.length - 1; i >= 0; i--) {
             this.hands[this.players[i]] = this.deck.deal(5);
+            this.status[this.players[i]] = {
+                "hp": 10,
+                "flipped": false,
+                "damaged": false,
+                "alive": true
+            };
         }
+        this.state = GameState.OPEN;
+    }
+
+    endTurn() {
+        this.state = GameState.DISCARD;
+    }
+
+    takeDamage(username, num) {
+        let user = this.status[username];
+        user.hp -= num;
+        if (user.hp <= 0) {
+            if (!user.flipped) {
+                user.flipped = true;
+                user.hp = 10;
+            } else {
+                user.alive = false;
+            }
+        }
+        user.damaged = true;
+    }
+
+    heal(username, num) {
+        let user = this.status[username];
+        user.hp += num;
+        if (user.hp > 10) user.hp = 10;
+    }
+
+    getRoomInfo(username) {
+        return {
+            "players": this.players,
+            "size": this.size,
+            "hand": this.hands[username],
+            "state": this.state,
+            "status": this.status
+        };
     }
 }
 

@@ -8,6 +8,8 @@ var User = require("./users.js").User;
 var Users = require("./users.js").Users;
 var Rooms = require("./rooms.js");
 
+let ids = {};
+
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/index.html');
 });
@@ -21,6 +23,7 @@ io.on('connection', function(socket) {
         try {
             Users.add(new User(username));
             callback(true);
+            ids[username] = socket.id;
         } catch (e) {
             // Username taken
             callback(false);
@@ -140,7 +143,10 @@ io.on('connection', function(socket) {
     socket.on('start', function (roomName) {
         Rooms(roomName).startGame();
         io.emit('rooms', mapToObject(Rooms.rooms));
-        io.to(roomName).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).hands);
+        // io.to(roomName).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo("test"));
+        for (let user of Rooms(roomName).players) {
+            io.to(ids[user]).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo(user));
+        }
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
@@ -158,6 +164,7 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function(){
         console.log(socket.username + ' has disconnected');
         Users.delete(socket.username);
+        delete ids[socket.username];
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });
