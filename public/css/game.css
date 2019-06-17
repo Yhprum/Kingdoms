@@ -9,7 +9,7 @@
 .battle {
     position: relative;
     width: 640px;
-    height: 360px;
+    height: 575px;
     border-top: 0;
     border-left: 0;
     border-right: 0;
@@ -68,32 +68,29 @@
     position: absolute;
     left: 10px;
     font-size: 150%;
-    padding: 0px 5px 0px 5px;
+    padding: 0 5px 0 5px;
 }
 
 #nextMove {
      margin: 10px;
 }
 
-#timer {
-    position: absolute;
-    left: 430px;
-    width: 200px;
-    height: 40px;
-    border:1px solid #000000;
-    margin-top: 10px;
-}
-
 .cards {
     clear: both;
-    cursor: pointer;
+    width: 640px;
+    margin: 0 0 0 0;
 }
 
 .barno img {
-    border:1px solid #000000;
-    border-radius: 16px;
-    width: 100px;
-    height: 160px;
+    /* Default Outline */
+    border-radius: 5px;
+
+    /* Darker Outline */
+    /*border:1px solid #000000;*/
+    /*border-radius: 6px;*/
+
+    cursor: pointer;
+    width: 100%;
 }
 
 .cards img:hover {
@@ -105,31 +102,6 @@ body .barno {
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 10px;
-}
-
-.actions {
-    clear: both;
-}
-
-body .action {
-    float: left;
-    margin-top: 3px;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-bottom: 3px;
-    padding-top: 25px;
-    width: 206px;
-    height: 80px;
-    background: #ccdfff;
-}
-
-.actions .card {
-    text-align: center;
-    cursor: pointer;
-}
-
-.actions .card:hover {
-    border-width: 2px;
 }
 
 .turn-row {
@@ -149,4 +121,21 @@ body .action {
     padding: 8px;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+}
+
+.player-area {
+    background-color: lightgray;
+    bottom: 0;
+    position: absolute;
+    right: 20%;
+    left: 20%;
+    border: 1px solid grey;
+    border-radius: 8px 8px 0 0;
+    border-bottom-width: 0;
+    height: 15%;
+}
+
+.player-area .barno img {
+    width: 25% !important;
+    margin-top: -200px;
 }

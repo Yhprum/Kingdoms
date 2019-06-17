@@ -10,8 +10,8 @@ function add(user) {
     users.set(user.username, user);
 }
 
-function deleteUser(user) {
-    users.delete(user.username);
+function deleteUser(username) {
+    users.delete(username);
 }
 
 function getUser(user) {

@@ -140,7 +140,7 @@ io.on('connection', function(socket) {
     socket.on('start', function (roomName) {
         Rooms(roomName).startGame();
         io.emit('rooms', mapToObject(Rooms.rooms));
-        io.to(roomName).emit('start game', Rooms(roomName).gameNumber);
+        io.to(roomName).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).hands);
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
@@ -157,6 +157,7 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function(){
         console.log(socket.username + ' has disconnected');
+        Users.delete(socket.username);
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });

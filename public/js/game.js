@@ -152,7 +152,7 @@ $(document).ready(function() {
             }
         });
 
-        socket.on('start game', function(gameNumber) {
+        socket.on('start game', function(gameNumber, hands) {
             var gameTab = document.createElement("li");
             gameTab.classList = "nav-item";
             gameTab.innerHTML = "<a class='nav-link' data-toggle='tab' href='#game-" + gameNumber + "'>Game<span class='close-game'>&times;</span></a>"
@@ -168,6 +168,13 @@ $(document).ready(function() {
                 // Instantiate game screen vars
 
                 document.getElementById("chatName").innerText = name;
+                let hand = hands[name];
+                for (let i = 0; i < 5; i++) { // populate your cards
+                    $("#card" + i).attr({
+                        src: 'cards/' + hand[i] + '.svg',
+                        name: hand[i]
+                    });
+                }
 
 
                 $("#chatInput").on('keyup', function (e) {
