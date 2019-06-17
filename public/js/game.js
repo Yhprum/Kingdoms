@@ -125,7 +125,6 @@ $(document).ready(function() {
                         join.innerText = "Leave Room";
                     }
                     item.appendChild(join);
-                    debugger;
                     if (rooms[room]["players"][0] === name) {
                         let start = document.createElement("button");
                         start.id = "start" + room;
@@ -139,7 +138,6 @@ $(document).ready(function() {
 
                     document.getElementById("challenges").appendChild(item);
                     $("#room" + room).on('click', function() {
-                        debugger;
                         let rn = this.id.substring(4, this.id.length);
                         if (roomname === "") {
                             socket.emit('join room', name, rn, function (callback) {

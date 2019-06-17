@@ -3,7 +3,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require("path");
-var Deck = require("./deck.js");
 
 var User = require("./users.js").User;
 var Users = require("./users.js").Users;
@@ -139,8 +138,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('start', function (roomName) {
-        Rooms(roomName).deck = new Deck("numbers"); // TODO:make these hidden from client
-        Rooms(roomName).specials = new Deck("specials");
+        Rooms(roomName).startGame();
         io.emit('rooms', mapToObject(Rooms.rooms));
         io.to(roomName).emit('start game', Rooms(roomName).gameNumber);
     });

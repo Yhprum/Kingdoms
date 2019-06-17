@@ -1,3 +1,5 @@
+let Deck = require("./deck");
+
 class Room {
     constructor(roomName, size) {
         this.roomName = roomName;
@@ -5,18 +7,29 @@ class Room {
         this.size = size;
         this.inProgress = false;
         this.gameNumber = gameNumber++;
-        this.deck = [];
-        this.specials = [];
+        this.deck = undefined;
+        this.specials = undefined;
+        this.hands = {};
     }
 
     join(username) {
-        if (this.players.length >= this.size) throw new Error(`Room ${roomName} is full`);
+        if (this.players.length >= this.size) throw new Error(`Room ${this.roomName} is full`);
         this.players.push(username);
     }
 
     leave(username) {
         this.players.splice(this.players.indexOf(username), 1);
         if (this.players.length === 0) deleteRoom(this.roomName);
+    }
+
+    startGame() {
+        this.deck = new Deck("numbers");
+        this.specials = new Deck("specials");
+        this.deck.shuffle();
+        this.specials.shuffle();
+        for (let i = this.players.length - 1; i >= 0; i--) {
+            this.hands[this.players[i]] = this.deck.deal(5);
+        }
     }
 }
 

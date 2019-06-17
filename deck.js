@@ -36,7 +36,7 @@ module.exports = class Deck {
         }
     }
 
-    deal() {
+    draw() {
         if (this.deck.length === 0) {
             if (this.discardPile.length === 0) {
                 return false;
@@ -47,6 +47,14 @@ module.exports = class Deck {
             }
         }
         return this.deck.pop();
+    }
+
+    deal(num) {
+        let cards = [];
+        for (let i = num - 1; i >= 0; i--) {
+            cards.push(this.draw());
+        }
+        return cards;
     }
 
     discard(card) {
