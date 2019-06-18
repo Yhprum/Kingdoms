@@ -146,3 +146,17 @@ body .barno {
     width: 25% !important;
     margin-top: -200px;
 }
+
+#attack {
+    position: absolute;
+    top: 42%;
+    bottom: 42%;
+    right: 42%;
+    left: 42%;
+}
+
+#takeDamage {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+}

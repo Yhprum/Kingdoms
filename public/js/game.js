@@ -180,11 +180,12 @@ $(document).ready(function() {
 
                 let myIndex = gameInfo.players.indexOf(name);
                 let kings = ["KS", "KH", "KD", "KC"];
-                for (let i = 0; i < gameInfo.size; i++) { // populate kings
+                for (let i = 0; i < gameInfo.size; i++) { // populate kings/hp
                     $("#king" + i).attr({
                         src: 'cards/' + kings[(i + myIndex) % gameInfo.size] + '.svg',
                         name: kings[(i + myIndex) % gameInfo.size]
                     });
+                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
 
                 $("#selections .barno img").click(function() {
@@ -214,9 +215,9 @@ $(document).ready(function() {
                 $(".king img").click(function () {
                     if (selection) {
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', username, this, [selection])
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
                         } else if (selection.indexOf("H") !== -1) {
-                            console.log("heal");
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
                         }
                         selection = "";
                     }
@@ -242,8 +243,12 @@ $(document).ready(function() {
                 });
             });
 
-            socket.on('status update', function (info) {
+            socket.on('update state', function (info) {
                 gameInfo = info;
+                let myIndex = gameInfo.players.indexOf(name);
+                for (let i = 0; i < gameInfo.size; i++) { // update hp
+                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
+                }
             });
         });
 

@@ -119,7 +119,6 @@ io.on('connection', function(socket) {
     });
 
     socket.on('join room', function(username, roomName, callback) {
-        console.log("join");
         try {
             Rooms(roomName).join(username);
             socket.join(roomName);
@@ -133,7 +132,6 @@ io.on('connection', function(socket) {
     });
 
     socket.on('leave room', function(username, roomName) {
-        console.log("leave");
         socket.leave(roomName);
         Rooms(roomName).leave(username);
         io.emit('users', Array.from(Users.users.keys()));
@@ -143,7 +141,6 @@ io.on('connection', function(socket) {
     socket.on('start', function (roomName) {
         Rooms(roomName).startGame();
         io.emit('rooms', mapToObject(Rooms.rooms));
-        // io.to(roomName).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo("test"));
         for (let user of Rooms(roomName).players) {
             io.to(ids[user]).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo(user));
         }
@@ -151,14 +148,20 @@ io.on('connection', function(socket) {
     
     socket.on('use cards', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
-        if (!cards.every(function (card) { room.hands[source].includes(card) })) return; // Trying to cheat lol
+        if (!cards.every(function (card) { return room.hands[source].includes(card) })) return; // Trying to cheat lol
+
         if (type(cards[0]) === "attack") { // TODO: check game state
-            io.to(roomName).emit('attack', source, target, cards, getStrength(cards));
+            if (room.status === 1) { // open
+                room.createAttack(source, target, getStrength(cards));
+            }
+            updateState(roomName);
         } else if (type(cards[0]) === "heal") {
             room.heal(target, getStrength(cards));
+            updateState(roomName);
         } else if (type(cards[0]) === "buy" && getStrength(cards) >= 10) {
             // buy a special card
         }
+        // TODO: discard the card(s)
     });
 
     socket.on('use special', function (roomName, source, target, card) {
@@ -203,6 +206,12 @@ io.on('connection', function(socket) {
 
     function mapToObject(map) {
         return Object.assign({}, ...[...map.entries()].map(([k, v]) => ({[k]: v})))
+    }
+
+    function updateState(roomName) {
+        for (let user of Rooms(roomName).players) {
+            io.to(ids[user]).emit('update state', Rooms(roomName).getRoomInfo(user));
+        }
     }
 
     function getStrength(cards) {
