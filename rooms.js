@@ -74,6 +74,7 @@ class Room {
             }
         }
         user.damaged = true;
+        this.state = GameState.OPEN;
     }
 
     heal(username, num) {
@@ -98,13 +99,22 @@ class Room {
         // Delete all queens from target's pile
     }
 
+    discard(username, cards) {
+        let hand = this.hands[username];
+        for (let card of cards) {
+            hand.splice(1, hand.indexOf(card));
+            this.deck.discard(card);
+        }
+    }
+
     getRoomInfo(username) {
         return {
             "players": this.players,
             "size": this.size,
             "hand": this.hands[username],
             "state": this.state,
-            "status": this.status
+            "status": this.status,
+            "attack": this.attack
         };
     }
 }

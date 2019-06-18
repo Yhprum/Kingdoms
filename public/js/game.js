@@ -194,7 +194,6 @@ $(document).ready(function() {
                     if (selection === card) {
                         selection = 0;
                         // Unhighlight
-
                     } else {
                         selection = card;
 
@@ -215,11 +214,20 @@ $(document).ready(function() {
                 $(".king img").click(function () {
                     if (selection) {
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
+                                if (callback) {
+                                    $("img[name=" + selection + "]").remove();
+                                    selection = "";
+                                } else {
+                                    alert("failed");
+                                }
+                            });
+
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
+                            $("img[name=" + selection + "]").remove();
+                            selection = "";
                         }
-                        selection = "";
                     }
                 });
 
@@ -246,8 +254,27 @@ $(document).ready(function() {
             socket.on('update state', function (info) {
                 gameInfo = info;
                 let myIndex = gameInfo.players.indexOf(name);
+                let $td = $("#takeDamage");
+                let $atk = $("#attack");
+
                 for (let i = 0; i < gameInfo.size; i++) { // update hp
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
+                }
+
+                if (info.state === 2) { // Closed
+                    document.getElementById("attack").innerHTML = "from " + gameInfo.attack.source +
+                        "<br>" + gameInfo.attack.power + " dmg<br>to " + gameInfo.attack.target;
+                    $atk.show();
+                    if (gameInfo.attack.target === name) {
+                        $td.show();
+                        $td.click(function () {
+                            socket.emit('take damage', name, roomname);
+                        });
+                    }
+                } else {
+                    $atk.hide();
+                    $td.hide();
+                    $td.off("click");
                 }
             });
         });

@@ -146,22 +146,23 @@ io.on('connection', function(socket) {
         }
     });
     
-    socket.on('use cards', function (roomName, source, target, cards) {
+    socket.on('use cards', function (roomName, source, target, cards, callback) {
         let room = Rooms(roomName);
         if (!cards.every(function (card) { return room.hands[source].includes(card) })) return; // Trying to cheat lol
 
-        if (type(cards[0]) === "attack") { // TODO: check game state
-            if (room.status === 1) { // open
+        if (type(cards[0]) === "attack") {
+            if (room.state === 1) { // open
                 room.createAttack(source, target, getStrength(cards));
+                updateState(roomName);
+                callback(true);
             }
-            updateState(roomName);
         } else if (type(cards[0]) === "heal") {
             room.heal(target, getStrength(cards));
             updateState(roomName);
         } else if (type(cards[0]) === "buy" && getStrength(cards) >= 10) {
             // buy a special card
         }
-        // TODO: discard the card(s)
+        room.discard(source, cards);
     });
 
     socket.on('use special', function (roomName, source, target, card) {
@@ -181,6 +182,14 @@ io.on('connection', function(socket) {
             room.jackOfClubs(target);
         } else {
             // King/Joker
+        }
+    });
+
+    socket.on('take damage', function (username, roomName) { // TODO: get username from socket instead?
+        let room = Rooms(roomName);
+        if (room.attack.target === username) {
+            room.takeDamage(username, room.attack.power);
+            updateState(roomName);
         }
     });
 

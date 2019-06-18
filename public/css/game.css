@@ -153,6 +153,7 @@ body .barno {
     bottom: 42%;
     right: 42%;
     left: 42%;
+    display: none;
 }
 
 #takeDamage {
