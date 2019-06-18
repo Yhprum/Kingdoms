@@ -151,7 +151,7 @@ io.on('connection', function(socket) {
     
     socket.on('use cards', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
-        if (!room.hands[source].every(cards)) return; // Trying to cheat lol
+        if (!cards.every(function (card) { room.hands[source].includes(card) })) return; // Trying to cheat lol
         if (type(cards[0]) === "attack") { // TODO: check game state
             io.to(roomName).emit('attack', source, target, cards, getStrength(cards));
         } else if (type(cards[0]) === "heal") {
@@ -163,19 +163,19 @@ io.on('connection', function(socket) {
 
     socket.on('use special', function (roomName, source, target, card) {
         let room = Rooms(roomName);
-        if (!room.hands[source].every(card)) return; // Trying to cheat lol
+        if (!room.hands[source].includes(card)) return; // Trying to cheat lol
         if (card.indexOf("Q")) {
-            // Queen
+            room.useQueen(target);
         } else if (card.indexOf("A")) {
             // Ace
         } else if (card === "JS") {
             // Jack of Spades
         } else if (card === "JH") {
-            // Jack of Hearts
+            room.fullHeal(target);
         } else if (card === "JD") {
             // Jack of Diamonds
         } else if (card === "JC") {
-            // Jack of Clubs
+            room.jackOfClubs(target);
         } else {
             // King/Joker
         }
@@ -212,8 +212,8 @@ io.on('connection', function(socket) {
     }
 
     function type(card) {
-        if (card.indexOf("H")) return "heal";
-        else if (card.indexOf("D")) return "buy";
+        if (card.indexOf("H") !== -1) return "heal";
+        else if (card.indexOf("D") !== -1) return "buy";
         else return "attack";
     }
 });

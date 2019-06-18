@@ -44,6 +44,7 @@ class Room {
                 "alive": true
             };
         }
+        this.size = this.players.length;
         this.state = GameState.OPEN;
     }
 
@@ -69,6 +70,22 @@ class Room {
         let user = this.status[username];
         user.hp += num;
         if (user.hp > 10) user.hp = 10;
+    }
+
+    useQueen(username) {
+        let user = this.status[username];
+        if (user.hp !== 10) user.hp = 10;
+        else (user.flipped = false);
+    }
+
+    fullHeal(username) {
+        let user = this.status[username];
+        user.hp = 10;
+        user.flipped = false;
+    }
+
+    jackOfClubs(target) {
+        // Delete all queens from target's pile
     }
 
     getRoomInfo(username) {

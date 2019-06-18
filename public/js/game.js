@@ -153,6 +153,9 @@ $(document).ready(function() {
         });
 
         socket.on('start game', function(gameNumber, info) {
+            var gameInfo = info;
+            var selection = "";
+
             var gameTab = document.createElement("li");
             gameTab.classList = "nav-item";
             gameTab.innerHTML = "<a class='nav-link' data-toggle='tab' href='#game-" + gameNumber + "'>Game<span class='close-game'>&times;</span></a>"
@@ -170,11 +173,54 @@ $(document).ready(function() {
                 document.getElementById("chatName").innerText = name;
                 for (let i = 0; i < 5; i++) { // populate your cards
                     $("#card" + i).attr({
-                        src: 'cards/' + info.hand[i] + '.svg',
-                        name: info.hand[i]
+                        src: 'cards/' + gameInfo.hand[i] + '.svg',
+                        name: gameInfo.hand[i]
                     });
                 }
 
+                let myIndex = gameInfo.players.indexOf(name);
+                let kings = ["KS", "KH", "KD", "KC"];
+                for (let i = 0; i < gameInfo.size; i++) { // populate kings
+                    $("#king" + i).attr({
+                        src: 'cards/' + kings[(i + myIndex) % gameInfo.size] + '.svg',
+                        name: kings[(i + myIndex) % gameInfo.size]
+                    });
+                }
+
+                $("#selections .barno img").click(function() {
+                    let card = this.name;
+
+                    if (selection === card) {
+                        selection = 0;
+                        // Unhighlight
+
+                    } else {
+                        selection = card;
+
+                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
+                            selection = card;
+                            // Highlight selected and kings
+                        } else if (card.indexOf("H") !== -1) {
+                            selection = card;
+                            // Highlight selected and kings
+                        } else if (card.indexOf("D") !== -1) {
+                            console.log("buy")
+                        } else {
+                            console.log("error");
+                        }
+                    }
+                });
+
+                $(".king img").click(function () {
+                    if (selection) {
+                        if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
+                            socket.emit('use cards', username, this, [selection])
+                        } else if (selection.indexOf("H") !== -1) {
+                            console.log("heal");
+                        }
+                        selection = "";
+                    }
+                });
 
                 $("#chatInput").on('keyup', function (e) {
                     if (e.keyCode === 13) {
@@ -194,6 +240,10 @@ $(document).ready(function() {
                     socket.emit('leave room', name, roomname);
                     roomname = "";
                 });
+            });
+
+            socket.on('status update', function (info) {
+                gameInfo = info;
             });
         });
 
