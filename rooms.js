@@ -102,7 +102,7 @@ class Room {
     discard(username, cards) {
         let hand = this.hands[username];
         for (let card of cards) {
-            hand.splice(1, hand.indexOf(card));
+            hand.splice(hand.indexOf(card), 1);
             this.deck.discard(card);
         }
     }

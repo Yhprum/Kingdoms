@@ -146,7 +146,7 @@ io.on('connection', function(socket) {
         }
     });
     
-    socket.on('use cards', function (roomName, source, target, cards, callback) {
+    socket.on('use cards', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
         if (!cards.every(function (card) { return room.hands[source].includes(card) })) return; // Trying to cheat lol
 
@@ -154,7 +154,6 @@ io.on('connection', function(socket) {
             if (room.state === 1) { // open
                 room.createAttack(source, target, getStrength(cards));
                 updateState(roomName);
-                callback(true);
             }
         } else if (type(cards[0]) === "heal") {
             room.heal(target, getStrength(cards));

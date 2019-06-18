@@ -199,9 +199,11 @@ $(document).ready(function() {
 
                         if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
                             selection = card;
+                            $("img[name='" + selection + "']").addClass("highlight");
                             // Highlight selected and kings
                         } else if (card.indexOf("H") !== -1) {
                             selection = card;
+                            $("img[name='" + selection + "']").addClass("highlight");
                             // Highlight selected and kings
                         } else if (card.indexOf("D") !== -1) {
                             console.log("buy")
@@ -214,20 +216,15 @@ $(document).ready(function() {
                 $(".king img").click(function () {
                     if (selection) {
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
-                                if (callback) {
-                                    $("img[name=" + selection + "]").remove();
-                                    selection = "";
-                                } else {
-                                    alert("failed");
-                                }
-                            });
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
+                            $("img[name='" + selection + "']").remove();
 
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name=" + selection + "]").remove();
-                            selection = "";
+                            $("img[name='" + selection + "']").remove();
                         }
+                        $("img[name='" + selection + "']").removeClass("highlight");
+                        selection = "";
                     }
                 });
 
