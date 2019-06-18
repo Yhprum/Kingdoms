@@ -148,6 +148,38 @@ io.on('connection', function(socket) {
             io.to(ids[user]).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo(user));
         }
     });
+    
+    socket.on('use cards', function (roomName, source, target, cards) {
+        let room = Rooms(roomName);
+        if (!room.hands[source].every(cards)) return; // Trying to cheat lol
+        if (type(cards[0]) === "attack") { // TODO: check game state
+            io.to(roomName).emit('attack', source, target, cards, getStrength(cards));
+        } else if (type(cards[0]) === "heal") {
+            room.heal(target, getStrength(cards));
+        } else if (type(cards[0]) === "buy" && getStrength(cards) >= 10) {
+            // buy a special card
+        }
+    });
+
+    socket.on('use special', function (roomName, source, target, card) {
+        let room = Rooms(roomName);
+        if (!room.hands[source].every(card)) return; // Trying to cheat lol
+        if (card.indexOf("Q")) {
+            // Queen
+        } else if (card.indexOf("A")) {
+            // Ace
+        } else if (card === "JS") {
+            // Jack of Spades
+        } else if (card === "JH") {
+            // Jack of Hearts
+        } else if (card === "JD") {
+            // Jack of Diamonds
+        } else if (card === "JC") {
+            // Jack of Clubs
+        } else {
+            // King/Joker
+        }
+    });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
         msg = name + ": " + msg;
@@ -171,6 +203,18 @@ io.on('connection', function(socket) {
 
     function mapToObject(map) {
         return Object.assign({}, ...[...map.entries()].map(([k, v]) => ({[k]: v})))
+    }
+
+    function getStrength(cards) {
+        let strength = 0;
+        for (let card of cards) strength += parseInt(card.substring(0, card.length - 1));
+        return strength;
+    }
+
+    function type(card) {
+        if (card.indexOf("H")) return "heal";
+        else if (card.indexOf("D")) return "buy";
+        else return "attack";
     }
 });
 
