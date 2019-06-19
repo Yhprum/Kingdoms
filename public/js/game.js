@@ -192,7 +192,7 @@ $(document).ready(function() {
                     let card = this.name;
 
                     if (selection === card) {
-                        selection = 0;
+                        selection = "";
                         // Unhighlight
                     } else {
                         selection = card;
@@ -216,15 +216,23 @@ $(document).ready(function() {
                 $(".king img").click(function () {
                     if (selection) {
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").remove();
-
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
+                                if (callback) {
+                                    $("img[name=" + selection + "]").remove();
+                                    selection = "";
+                                } else {
+                                    alert("An attack is already in progress");
+                                    selection = "";
+                                }
+                            });
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
                             $("img[name='" + selection + "']").remove();
+                            selection = "";
+                        } else {
+                            selection = "";
                         }
                         $("img[name='" + selection + "']").removeClass("highlight");
-                        selection = "";
                     }
                 });
 
