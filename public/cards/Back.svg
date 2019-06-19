@@ -1,0 +1,17 @@
+<svg width="240" height="336" xmlns="http://www.w3.org/2000/svg" class="card" preserveAspectRatio="none">
+ <symbol preserveAspectRatio="xMinYMid" viewBox="-600 -600 1200 1200" id="S">
+  <path id="svg_1" fill="black" d="m0,-500c100,250 355,400 355,685a150,150 0 0 1 -300,0a10,10 0 0 0 -20,0c0,200 50,215 95,315l-260,0c45,-100 95,-115 95,-315a10,10 0 0 0 -20,0a150,150 0 0 1 -300,0c0,-285 255,-435 355,-685z"/>
+ </symbol>
+
+ <symbol preserveAspectRatio="xMinYMid" viewBox="-500 -500 1000 1000" id="S2">
+  <path id="svg_2" fill="none" stroke-miterlimit="1.5" stroke-linecap="square" stroke-width="80" stroke="black" d="m-225,-225c-20,-40 25,-235 225,-235c200,0 225,135 225,235c0,200 -450,385 -450,685l450,0l0,-160"/>
+ </symbol>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <rect id="svg_3" stroke="black" fill="white" ry="12" rx="12" y="0.5" x="0.55263" height="335" width="239"/>
+ </g>
+</svg>

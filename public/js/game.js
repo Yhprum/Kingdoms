@@ -1,12 +1,16 @@
 $(document).ready(function() {
     var name;
     var roomname = "";
+    var selection = "";
+    var gameInfo;
     var socket = io();
     var chatroom = "Lobby";
     var $login = $("#login");
     var $usernameInput = $("#username");
 
     var $chatForm = $("#chatForm");
+    var $td;
+    var $atk;
 
     var hash = window.location.hash;
     hash && $('#tabList a[href="' + hash + '"]').tab('show');
@@ -153,8 +157,7 @@ $(document).ready(function() {
         });
 
         socket.on('start game', function(gameNumber, info) {
-            var gameInfo = info;
-            var selection = "";
+            gameInfo = info;
 
             var gameTab = document.createElement("li");
             gameTab.classList = "nav-item";
@@ -169,6 +172,8 @@ $(document).ready(function() {
             $("#game-" + gameNumber).load("game.html", function() {
                 $('#tabList a[href="#game-' + gameNumber + '"]').tab('show');
                 // Instantiate game screen vars
+                $td = $("#takeDamage");
+                $atk = $("#attack");
 
                 document.getElementById("chatName").innerText = name;
                 for (let i = 0; i < 5; i++) { // populate your cards
@@ -182,59 +187,13 @@ $(document).ready(function() {
                 let kings = ["KS", "KH", "KD", "KC"];
                 for (let i = 0; i < gameInfo.size; i++) { // populate kings/hp
                     $("#king" + i).attr({
-                        src: 'cards/' + kings[(i + myIndex) % gameInfo.size] + '.svg',
+                        src: 'cards/Back.svg',
                         name: kings[(i + myIndex) % gameInfo.size]
                     });
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
 
-                $("#selections .barno img").click(function() {
-                    let card = this.name;
-
-                    if (selection === card) {
-                        selection = "";
-                        // Unhighlight
-                    } else {
-                        selection = card;
-
-                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
-                            selection = card;
-                            $("img[name='" + selection + "']").addClass("highlight");
-                            // Highlight selected and kings
-                        } else if (card.indexOf("H") !== -1) {
-                            selection = card;
-                            $("img[name='" + selection + "']").addClass("highlight");
-                            // Highlight selected and kings
-                        } else if (card.indexOf("D") !== -1) {
-                            console.log("buy")
-                        } else {
-                            console.log("error");
-                        }
-                    }
-                });
-
-                $(".king img").click(function () {
-                    if (selection) {
-                        if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
-                                if (callback) {
-                                    $("img[name=" + selection + "]").remove();
-                                    selection = "";
-                                } else {
-                                    alert("An attack is already in progress");
-                                    selection = "";
-                                }
-                            });
-                        } else if (selection.indexOf("H") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").remove();
-                            selection = "";
-                        } else {
-                            selection = "";
-                        }
-                        $("img[name='" + selection + "']").removeClass("highlight");
-                    }
-                });
+                gameStateOpen();
 
                 $("#chatInput").on('keyup', function (e) {
                     if (e.keyCode === 13) {
@@ -259,29 +218,115 @@ $(document).ready(function() {
             socket.on('update state', function (info) {
                 gameInfo = info;
                 let myIndex = gameInfo.players.indexOf(name);
-                let $td = $("#takeDamage");
-                let $atk = $("#attack");
+
+                let kings = ["KS", "KH", "KD", "KC"];
+                for (let i = 0; i < gameInfo.size; i++) { // populate kings/hp
+                    let index = (i + myIndex) % gameInfo.size;
+                    let king = gameInfo.status[gameInfo.players[index]].flipped ? kings[index] : "Back";
+                    $("#king" + i).attr({
+                        src: 'cards/' + king + '.svg',
+                        name: kings[(i + myIndex) % gameInfo.size]
+                    });
+                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
+                }
 
                 for (let i = 0; i < gameInfo.size; i++) { // update hp
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
 
-                if (info.state === 2) { // Closed
-                    document.getElementById("attack").innerHTML = "from " + gameInfo.attack.source +
-                        "<br>" + gameInfo.attack.power + " dmg<br>to " + gameInfo.attack.target;
-                    $atk.show();
-                    if (gameInfo.attack.target === name) {
-                        $td.show();
-                        $td.click(function () {
-                            socket.emit('take damage', name, roomname);
-                        });
-                    }
-                } else {
-                    $atk.hide();
-                    $td.hide();
-                    $td.off("click");
+                clear();
+                switch (gameInfo.state) {
+                    case 1:
+                        gameStateOpen();
+                        break;
+                    case 2:
+                        gameStateClosed();
+                        break;
+                    case 3:
+                        gameStateDiscard();
+                        break;
+                    case 4:
+                        gameStateDraw();
+                        break;
                 }
             });
+
+            function clear() {
+                $("#selections .barno img").off("click");
+                $(".king img").off("click");
+                $atk.hide();
+                $td.hide();
+                $td.off("click");
+            }
+
+            function gameStateOpen() {
+                $("#selections .barno img").click(function() {
+                    let card = this.name;
+
+                    if (selection === card) {
+                        $("img[name='" + selection + "']").removeClass("highlight");
+                        selection = "";
+                    } else {
+                        selection = card;
+
+                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
+                            selection = card;
+                            $("img[name='" + selection + "']").addClass("highlight");
+                        } else if (card.indexOf("H") !== -1) {
+                            selection = card;
+                            $("img[name='" + selection + "']").addClass("highlight");
+                        } else if (card.indexOf("D") !== -1) {
+                            console.log("buy")
+                        } else {
+                            console.log("error");
+                        }
+                    }
+                });
+
+                $(".king img").click(function () {
+                    if (selection) {
+                        let kings = ["KS", "KH", "KD", "KC"];
+                        if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
+                                if (callback) {
+                                    $("img[name=" + selection + "]").remove();
+                                    selection = "";
+                                } else {
+                                    alert("An attack is already in progress");
+                                    selection = "";
+                                }
+                            });
+                        } else if (selection.indexOf("H") !== -1) {
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
+                            $("img[name='" + selection + "']").remove();
+                            selection = "";
+                        } else {
+                            selection = "";
+                        }
+                        $("img[name='" + selection + "']").removeClass("highlight");
+                    }
+                });
+            }
+
+            function gameStateClosed() {
+                document.getElementById("attack").innerHTML = "from " + gameInfo.attack.source +
+                    "<br>" + gameInfo.attack.power + " dmg<br>to " + gameInfo.attack.target;
+                $atk.show();
+                if (gameInfo.attack.target === name) {
+                    $td.show();
+                    $td.click(function () {
+                        socket.emit('take damage', name, roomname);
+                    });
+                }
+            }
+
+            function gameStateDiscard() {
+
+            }
+
+            function gameStateDraw() {
+
+            }
         });
 
         socket.on('update', function(history, turn) {
