@@ -151,7 +151,7 @@ io.on('connection', function(socket) {
         if (!cards.every(function (card) { return room.hands[source].includes(card) })) return; // Trying to cheat lol
 
         if (type(cards[0]) === "attack") {
-            if (room.state === 1) { // open
+            if (room.state === 1 && !room.status[target].damaged) { // Change to try catch for easy error messages
                 room.createAttack(source, target, getStrength(cards));
                 room.discard(source, cards);
                 updateState(roomName);
@@ -195,6 +195,10 @@ io.on('connection', function(socket) {
             room.takeDamage(username, room.attack.power);
             updateState(roomName);
         }
+    });
+
+    socket.on('discard', function (username, roomName, cards) {
+        Rooms(roomName).discard(username, cards);
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language

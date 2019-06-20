@@ -193,7 +193,9 @@ $(document).ready(function() {
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
 
+                clear();
                 gameStateOpen();
+                // gameStateDiscard();
 
                 $("#chatInput").on('keyup', function (e) {
                     if (e.keyCode === 13) {
@@ -252,6 +254,7 @@ $(document).ready(function() {
             });
 
             function clear() {
+                // selection = "";
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
                 $atk.hide();
@@ -260,6 +263,7 @@ $(document).ready(function() {
             }
 
             function gameStateOpen() {
+                document.getElementById("helptext").innerText = "No attacks in progress";
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
@@ -267,6 +271,7 @@ $(document).ready(function() {
                         $("img[name='" + selection + "']").removeClass("highlight");
                         selection = "";
                     } else {
+                        if (selection) $("img[name='" + selection + "']").removeClass("highlight");
                         selection = card;
 
                         if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
@@ -309,10 +314,12 @@ $(document).ready(function() {
             }
 
             function gameStateClosed() {
+                document.getElementById("helptext").innerText = "An attack is in progress...";
                 document.getElementById("attack").innerHTML = "from " + gameInfo.attack.source +
                     "<br>" + gameInfo.attack.power + " dmg<br>to " + gameInfo.attack.target;
                 $atk.show();
                 if (gameInfo.attack.target === name) {
+                    document.getElementById("helptext").innerText = "You are being attacked!";
                     $td.show();
                     $td.click(function () {
                         socket.emit('take damage', name, roomname);
@@ -321,7 +328,25 @@ $(document).ready(function() {
             }
 
             function gameStateDiscard() {
+                document.getElementById("helptext").innerText = "Choose any number of cards to discard";
+                selection = [];
+                $("#selections .barno img").click(function() {
+                    if (!selection.includes(this.name)) {
+                        selection.push(this.name);
+                        $(this).addClass("highlight");
+                    } else {
+                        selection.splice(selection.indexOf(this.name), 1);
+                        $(this).removeClass("highlight");
+                    }
+                });
 
+                $td.show();
+                $td.click(function (callbackfn, thisArg) {
+                    selection.forEach(function (card) {
+                        $("img[name='" + card + "']").remove();
+                    });
+                    socket.emit('discard', name, roomname, selection);
+                });
             }
 
             function gameStateDraw() {
