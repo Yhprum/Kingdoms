@@ -9,7 +9,7 @@ $(document).ready(function() {
     var $usernameInput = $("#username");
 
     var $chatForm = $("#chatForm");
-    var $td;
+    var $b1;
     var $atk;
 
     var hash = window.location.hash;
@@ -172,7 +172,7 @@ $(document).ready(function() {
             $("#game-" + gameNumber).load("game.html", function() {
                 $('#tabList a[href="#game-' + gameNumber + '"]').tab('show');
                 // Instantiate game screen vars
-                $td = $("#takeDamage");
+                $b1 = $("#gameButton1");
                 $atk = $("#attack");
 
                 document.getElementById("chatName").innerText = name;
@@ -258,8 +258,8 @@ $(document).ready(function() {
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
                 $atk.hide();
-                $td.hide();
-                $td.off("click");
+                $b1.hide();
+                $b1.off("click");
             }
 
             function gameStateOpen() {
@@ -268,7 +268,7 @@ $(document).ready(function() {
                     let card = this.name;
 
                     if (selection === card) {
-                        $("img[name='" + selection + "']").removeClass("highlight");
+                        $(this).removeClass("highlight");
                         selection = "";
                     } else {
                         if (selection) $("img[name='" + selection + "']").removeClass("highlight");
@@ -276,10 +276,10 @@ $(document).ready(function() {
 
                         if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
                             selection = card;
-                            $("img[name='" + selection + "']").addClass("highlight");
+                            $(this).addClass("highlight");
                         } else if (card.indexOf("H") !== -1) {
                             selection = card;
-                            $("img[name='" + selection + "']").addClass("highlight");
+                            $(this).addClass("highlight");
                         } else if (card.indexOf("D") !== -1) {
                             console.log("buy")
                         } else {
@@ -297,7 +297,8 @@ $(document).ready(function() {
                                     $("img[name=" + selection + "]").remove();
                                     selection = "";
                                 } else {
-                                    alert("An attack is already in progress");
+                                    alert("Your target has already taken damage");
+                                    $("img[name='" + selection + "']").removeClass("highlight");
                                     selection = "";
                                 }
                             });
@@ -306,9 +307,9 @@ $(document).ready(function() {
                             $("img[name='" + selection + "']").remove();
                             selection = "";
                         } else {
+                            $("img[name='" + selection + "']").removeClass("highlight");
                             selection = "";
                         }
-                        $("img[name='" + selection + "']").removeClass("highlight");
                     }
                 });
             }
@@ -320,11 +321,53 @@ $(document).ready(function() {
                 $atk.show();
                 if (gameInfo.attack.target === name) {
                     document.getElementById("helptext").innerText = "You are being attacked!";
-                    $td.show();
-                    $td.click(function () {
+                    $b1.text("Take Damage");
+                    $b1.show();
+                    $b1.click(function () {
                         socket.emit('take damage', name, roomname);
                     });
                 }
+
+                $("#selections .barno img").click(function() {
+                    let card = this.name;
+
+                    if (selection === card) {
+                        $(this).removeClass("highlight");
+                        selection = "";
+                    } else {
+                        if (selection) $("img[name='" + selection + "']").removeClass("highlight");
+                        selection = card;
+
+                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
+                            selection = card;
+                            $(this).addClass("highlight");
+                        } else if (card.indexOf("H") !== -1) {
+                            selection = card;
+                            $(this).addClass("highlight");
+                        } else if (card.indexOf("D") !== -1) {
+                            console.log("buy")
+                        } else {
+                            console.log("error");
+                        }
+                    }
+                });
+
+                $(".king img").click(function () {
+                    if (selection) {
+                        $("img[name='" + selection + "']").removeClass("highlight");
+                        let kings = ["KS", "KH", "KD", "KC"];
+                        if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
+                            alert("closed");
+                            selection = "";
+                        } else if (selection.indexOf("H") !== -1) {
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
+                            $("img[name='" + selection + "']").remove();
+                            selection = "";
+                        } else {
+                            selection = "";
+                        }
+                    }
+                });
             }
 
             function gameStateDiscard() {
@@ -340,8 +383,9 @@ $(document).ready(function() {
                     }
                 });
 
-                $td.show();
-                $td.click(function (callbackfn, thisArg) {
+                $b1.text("Discard and end turn");
+                $b1.show();
+                $b1.click(function () {
                     selection.forEach(function (card) {
                         $("img[name='" + card + "']").remove();
                     });
