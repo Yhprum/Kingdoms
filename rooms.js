@@ -18,6 +18,7 @@ class Room {
         this.specials = undefined;
         this.hands = {};
         this.status = {};
+        this.counter = 0;
     }
 
     join(username) {
@@ -105,6 +106,10 @@ class Room {
             hand.splice(hand.indexOf(card), 1);
             this.deck.discard(card);
         }
+    }
+
+    dealCards() {
+
     }
 
     getRoomInfo(username) {

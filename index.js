@@ -198,7 +198,15 @@ io.on('connection', function(socket) {
     });
 
     socket.on('discard', function (username, roomName, cards) {
-        Rooms(roomName).discard(username, cards);
+        let room = Rooms(roomName);
+        room.discard(username, cards);
+        if (++room.counter === room.size) {
+            room.counter = 0;
+
+            // Draw new cards
+            room.dealCards();
+            updateState(roomName);
+        }
     });
 
     socket.on('chat message', function (msg, name, roomname) { // TODO: Sanitize for HTML, filter language
