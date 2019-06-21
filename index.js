@@ -202,9 +202,14 @@ io.on('connection', function(socket) {
         room.discard(username, cards);
         if (++room.counter === room.size) {
             room.counter = 0;
+            room.state = 1;
 
             // Draw new cards
             room.dealCards();
+            for (let user of room.players) {
+                console.log(room.hand);
+                io.to(ids[user]).emit('update turn', room.hands[user]);
+            }
             updateState(roomName);
         }
     });

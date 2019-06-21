@@ -109,7 +109,14 @@ class Room {
     }
 
     dealCards() {
-
+        let i = 1;
+        while (true) {
+            if (this.deck.size() === 0) return;
+            let cur = this.players[i++ % this.size];
+            if (this.hands[cur].length < 5)
+                this.hands[cur].push(this.deck.draw())
+            if (i === 20) return; // TODO: write a better exit case lol
+        }
     }
 
     getRoomInfo(username) {

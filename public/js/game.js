@@ -194,8 +194,8 @@ $(document).ready(function() {
                 }
 
                 clear();
-                gameStateOpen();
-                // gameStateDiscard();
+                // gameStateOpen();
+                gameStateDiscard();
 
                 $("#chatInput").on('keyup', function (e) {
                     if (e.keyCode === 13) {
@@ -294,7 +294,7 @@ $(document).ready(function() {
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
                                 if (callback) {
-                                    $("img[name=" + selection + "]").remove();
+                                    $("img[name=" + selection + "]").hide();
                                     selection = "";
                                 } else {
                                     alert("Your target has already taken damage");
@@ -304,7 +304,7 @@ $(document).ready(function() {
                             });
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").remove();
+                            $("img[name='" + selection + "']").hide();
                             selection = "";
                         } else {
                             $("img[name='" + selection + "']").removeClass("highlight");
@@ -361,7 +361,7 @@ $(document).ready(function() {
                             selection = "";
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").remove();
+                            $("img[name='" + selection + "']").hide();
                             selection = "";
                         } else {
                             selection = "";
@@ -387,7 +387,7 @@ $(document).ready(function() {
                 $b1.show();
                 $b1.click(function () {
                     selection.forEach(function (card) {
-                        $("img[name='" + card + "']").remove();
+                        $("img[name='" + card + "']").hide();
                     });
                     socket.emit('discard', name, roomname, selection);
                 });
@@ -396,6 +396,16 @@ $(document).ready(function() {
             function gameStateDraw() {
 
             }
+
+            socket.on('update turn', function (hand) {
+                console.log(hand);
+                for (let i = 0; i < 5; i++) {
+                    $("#card" + i).attr({
+                        src: 'cards/' + hand[i] + '.svg',
+                        name: hand[i]
+                    }).removeClass("highlight").show();
+                }
+            });
         });
 
         socket.on('update', function(history, turn) {

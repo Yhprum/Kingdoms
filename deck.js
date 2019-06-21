@@ -18,7 +18,7 @@ module.exports = class Deck {
         this.discardPile = [];
     }
 
-    get size() {
+    size() {
         return this.deck.length;
     }
 
