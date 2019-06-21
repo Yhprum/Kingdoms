@@ -248,9 +248,6 @@ $(document).ready(function() {
                     case 3:
                         gameStateDiscard();
                         break;
-                    case 4:
-                        gameStateDraw();
-                        break;
                 }
             });
 
@@ -259,6 +256,7 @@ $(document).ready(function() {
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
                 $atk.hide();
+                $atk.off("click");
                 $b1.hide();
                 $b1.off("click");
                 $b2.hide();
@@ -334,6 +332,20 @@ $(document).ready(function() {
                     $b1.click(function () {
                         socket.emit('take damage', name, roomname);
                     });
+                    $atk.click(() => {
+                        if (selection) {
+                            let $selection = $("img[name='" + selection + "']");
+                            $selection.removeClass("highlight");
+                            if (selection.indexOf("H") !== -1 || getStrength([selection]) >= gameInfo.attack.power) {
+                                socket.emit('update attack', roomname, name, [selection]);
+                                $selection.hide();
+                                selection = "";
+                            } else {
+                                alert("Counterattack not strong enough!");
+                            }
+
+                        }
+                    });
                 }
 
                 $("#selections .barno img").click(function() {
@@ -401,8 +413,11 @@ $(document).ready(function() {
                 });
             }
 
-            function gameStateDraw() {
-
+            function getStrength(cards) {
+                let strength = 0;
+                for (let card of cards) strength += parseInt(card.substring(0, card.length - 1));
+                console.log(strength);
+                return strength;
             }
 
             socket.on('update turn', function (hand) {

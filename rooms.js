@@ -3,8 +3,7 @@ let Deck = require("./deck");
 let GameState = {
     "OPEN": 1,
     "CLOSED": 2,
-    "DISCARD": 3,
-    "DRAW": 4
+    "DISCARD": 3
 };
 
 class Room {

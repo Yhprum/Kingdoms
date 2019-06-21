@@ -189,6 +189,31 @@ io.on('connection', function(socket) {
         }
     });
 
+    socket.on('update attack', function (roomName, username, cards) {
+        let room = Rooms(roomName);
+        if (!cards.every(function (card) { return room.hands[username].includes(card) })) return;
+
+        if (type(cards[0]) === "attack") {
+            if (getStrength(cards) === room.attack.power) {
+                room.state = 1;
+                room.discard(username, cards);
+            } else if (getStrength(cards) > room.attack.power) {
+                room.attack.target = room.attack.source;
+                room.attack.source = username;
+                room.attack.power = getStrength(cards);
+                room.discard(username, cards);
+            }
+        } else if (type(cards[0]) === "heal") {
+            if (getStrength(cards) >= room.attack.power) {
+                room.state = 1;
+            } else {
+                room.attack.power -= getStrength(cards);
+            }
+            room.discard(username, cards);
+        }
+        updateState(roomName);
+    });
+
     socket.on('take damage', function (username, roomName) { // TODO: get username from socket instead?
         let room = Rooms(roomName);
         if (room.attack.target === username) {
