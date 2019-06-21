@@ -18,7 +18,7 @@ class Room {
         this.specials = undefined;
         this.hands = {};
         this.status = {};
-        this.counter = 0;
+        this.counter = new Set();
     }
 
     join(username) {
@@ -51,6 +51,9 @@ class Room {
     }
 
     endTurn() {
+        for (let i = this.players.length - 1; i >= 0; i--) {
+            this.status[this.players[i]].damaged = false;
+        }
         this.state = GameState.DISCARD;
     }
 
@@ -111,12 +114,13 @@ class Room {
     dealCards() {
         let i = 1;
         while (true) {
-            if (this.deck.size() === 0) return;
+            if (this.deck.size() === 0) break;
             let cur = this.players[i++ % this.size];
             if (this.hands[cur].length < 5)
-                this.hands[cur].push(this.deck.draw())
-            if (i === 20) return; // TODO: write a better exit case lol
+                this.hands[cur].push(this.deck.draw());
+            if (i === 20) break; // TODO: write a better exit case lol
         }
+        this.state = GameState.OPEN;
     }
 
     getRoomInfo(username) {

@@ -197,17 +197,24 @@ io.on('connection', function(socket) {
         }
     });
 
+    socket.on("end turn", function (username, roomName) {
+       let room = Rooms(roomName);
+       room.counter.add(username);
+       if (room.counter.size === room.size) {
+           room.counter.clear();
+           room.endTurn();
+           updateState(roomName);
+       }
+    });
+
     socket.on('discard', function (username, roomName, cards) {
         let room = Rooms(roomName);
         room.discard(username, cards);
-        if (++room.counter === room.size) {
-            room.counter = 0;
-            room.state = 1;
-
-            // Draw new cards
+        room.counter.add(username);
+        if (room.counter.size === room.size) {
+            room.counter.clear();
             room.dealCards();
             for (let user of room.players) {
-                console.log(room.hand);
                 io.to(ids[user]).emit('update turn', room.hands[user]);
             }
             updateState(roomName);

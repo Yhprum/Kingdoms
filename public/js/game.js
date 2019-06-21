@@ -10,6 +10,7 @@ $(document).ready(function() {
 
     var $chatForm = $("#chatForm");
     var $b1;
+    var $b2;
     var $atk;
 
     var hash = window.location.hash;
@@ -173,6 +174,7 @@ $(document).ready(function() {
                 $('#tabList a[href="#game-' + gameNumber + '"]').tab('show');
                 // Instantiate game screen vars
                 $b1 = $("#gameButton1");
+                $b2 = $("#gameButton2");
                 $atk = $("#attack");
 
                 document.getElementById("chatName").innerText = name;
@@ -194,8 +196,7 @@ $(document).ready(function() {
                 }
 
                 clear();
-                // gameStateOpen();
-                gameStateDiscard();
+                gameStateOpen();
 
                 $("#chatInput").on('keyup', function (e) {
                     if (e.keyCode === 13) {
@@ -260,10 +261,17 @@ $(document).ready(function() {
                 $atk.hide();
                 $b1.hide();
                 $b1.off("click");
+                $b2.hide();
+                $b2.off("click");
             }
 
             function gameStateOpen() {
                 document.getElementById("helptext").innerText = "No attacks in progress";
+                $b2.text("End Turn");
+                $b2.show();
+                $b2.click(() => {
+                    socket.emit('end turn', name, roomname);
+                });
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
