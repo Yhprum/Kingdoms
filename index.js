@@ -125,6 +125,7 @@ io.on('connection', function(socket) {
             callback(true);
             io.emit('rooms', mapToObject(Rooms.rooms));
             console.log(username + " joined room " + roomName);
+            socket.room = roomName;
         } catch (e) {
             // Room full
             callback(false);
@@ -258,10 +259,11 @@ io.on('connection', function(socket) {
         io.emit('rooms', mapToObject(Rooms.rooms));
     });
 
-    socket.on('disconnect', function(){
+    socket.on('disconnect', function() {
         console.log(socket.username + ' has disconnected');
         Users.delete(socket.username);
         delete ids[socket.username];
+        // Rooms(socket.room).leave(socket.username);
         io.emit('users', Array.from(Users.users.keys()));
         io.emit('rooms', mapToObject(Rooms.rooms));
     });

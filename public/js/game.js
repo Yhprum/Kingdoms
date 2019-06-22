@@ -416,7 +416,6 @@ $(document).ready(function() {
             function getStrength(cards) {
                 let strength = 0;
                 for (let card of cards) strength += parseInt(card.substring(0, card.length - 1));
-                console.log(strength);
                 return strength;
             }
 

@@ -26,8 +26,10 @@ class Room {
     }
 
     leave(username) {
-        this.players.splice(this.players.indexOf(username), 1);
-        if (this.players.length === 0) deleteRoom(this.roomName);
+        if (this.players.indexOf(username) !== -1){
+            this.players.splice(this.players.indexOf(username), 1);
+            if (this.players.length === 0) deleteRoom(this.roomName);
+        }
     }
 
     startGame() {
@@ -113,10 +115,12 @@ class Room {
     dealCards() {
         let i = 1;
         while (true) {
-            if (this.deck.size() === 0) break;
             let cur = this.players[i++ % this.size];
-            if (this.hands[cur].length < 5)
-                this.hands[cur].push(this.deck.draw());
+            if (this.hands[cur].length < 5) {
+                let card = this.deck.draw();
+                if (!card) break;
+                this.hands[cur].push(card);
+            }
             if (i === 20) break; // TODO: write a better exit case lol
         }
         this.state = GameState.OPEN;
