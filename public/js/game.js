@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var name;
     var roomname = "";
-    var selection = "";
+    var selection = [];
     var gameInfo;
     var socket = io();
     var chatroom = "Lobby";
@@ -253,6 +253,7 @@ $(document).ready(function() {
 
             function clear() {
                 // selection = "";
+                // $("img[name='" + selection + "']").removeClass("highlight");
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
                 $atk.hide();
@@ -273,48 +274,49 @@ $(document).ready(function() {
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
-                    if (selection === card) {
-                        $(this).removeClass("highlight");
-                        selection = "";
-                    } else {
-                        if (selection) $("img[name='" + selection + "']").removeClass("highlight");
-                        selection = card;
-
-                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
-                            selection = card;
+                    if (selection.includes(card)) {
+                        selection.splice(selection.indexOf(card), 1);
+                        $("img[name='" + card + "']").removeClass("highlight");
+                    } else if (card.indexOf("D") !== -1) {
+                        if (selection.length === 0 || selection[0].indexOf("D") === -1) {
+                            selection = [card];
+                            $("img.highlight").removeClass("highlight");
                             $(this).addClass("highlight");
-                        } else if (card.indexOf("H") !== -1) {
-                            selection = card;
-                            $(this).addClass("highlight");
-                        } else if (card.indexOf("D") !== -1) {
-                            console.log("buy")
+                        } else if (selection.indexOf(card) !== -1) {
+                            selection.splice(selection.indexOf(card), 1);
                         } else {
-                            console.log("error");
+                            selection.push(card);
+                            $(this).addClass("highlight");
                         }
+                    } else {
+                        selection = [card];
+                        $("img.highlight").removeClass("highlight");
+                        $(this).addClass("highlight");
                     }
+                    console.log(selection)
                 });
 
                 $(".king img").click(function () {
-                    if (selection) {
+                    if (selection.length > 0) {
                         let kings = ["KS", "KH", "KD", "KC"];
-                        if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection], function (callback) {
+                        if (selection[0].indexOf("S") !== -1 || selection[0].indexOf("C") !== -1) {
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection, function (callback) {
                                 if (callback) {
-                                    $("img[name=" + selection + "]").hide();
-                                    selection = "";
+                                    $("img.highlight").hide();
+                                    selection = [];
                                 } else {
                                     alert("Your target has already taken damage");
-                                    $("img[name='" + selection + "']").removeClass("highlight");
-                                    selection = "";
+                                    $("img.highlight").removeClass("highlight");
+                                    selection = [];
                                 }
                             });
-                        } else if (selection.indexOf("H") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").hide();
-                            selection = "";
+                        } else if (selection[0].indexOf("H") !== -1) {
+                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                            $("img.highlight").hide();
+                            selection = [];
                         } else {
-                            $("img[name='" + selection + "']").removeClass("highlight");
-                            selection = "";
+                            $("img.highlight").removeClass("highlight");
+                            selection = [];
                         }
                     }
                 });
@@ -333,17 +335,16 @@ $(document).ready(function() {
                         socket.emit('take damage', name, roomname);
                     });
                     $atk.click(() => {
-                        if (selection) {
-                            let $selection = $("img[name='" + selection + "']");
-                            $selection.removeClass("highlight");
-                            if (selection.indexOf("H") !== -1 || getStrength([selection]) >= gameInfo.attack.power) {
-                                socket.emit('update attack', roomname, name, [selection]);
+                        if (selection.length > 0) {
+                            let $selection =  $("img.highlight");
+                            if (selection[0].indexOf("H") !== -1 || getStrength(selection) >= gameInfo.attack.power) {
+                                socket.emit('update attack', roomname, name, selection);
                                 $selection.hide();
-                                selection = "";
+                                selection = [];
                             } else {
+                                $selection.removeClass("highlight");
                                 alert("Counterattack not strong enough!");
                             }
-
                         }
                     });
                 }
@@ -351,40 +352,40 @@ $(document).ready(function() {
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
-                    if (selection === card) {
-                        $(this).removeClass("highlight");
-                        selection = "";
-                    } else {
-                        if (selection) $("img[name='" + selection + "']").removeClass("highlight");
-                        selection = card;
-
-                        if (card.indexOf("S") !== -1 || card.indexOf("C") !== -1) {
-                            selection = card;
+                    if (selection.includes(card)) {
+                        selection.splice(selection.indexOf(card), 1);
+                        $("img[name='" + card + "']").removeClass("highlight");
+                    } else if (card.indexOf("D") !== -1) {
+                        if (selection.length === 0 || selection[0].indexOf("D") === -1) {
+                            selection = [card];
+                            $("img.highlight").removeClass("highlight");
                             $(this).addClass("highlight");
-                        } else if (card.indexOf("H") !== -1) {
-                            selection = card;
-                            $(this).addClass("highlight");
-                        } else if (card.indexOf("D") !== -1) {
-                            console.log("buy")
+                        } else if (selection.indexOf(card) !== -1) {
+                            selection.splice(selection.indexOf(card), 1);
                         } else {
-                            console.log("error");
+                            selection.push(card);
+                            $(this).addClass("highlight");
                         }
+                    } else {
+                        selection = [card];
+                        $("img.highlight").removeClass("highlight");
+                        $(this).addClass("highlight");
                     }
                 });
 
                 $(".king img").click(function () {
-                    if (selection) {
-                        $("img[name='" + selection + "']").removeClass("highlight");
+                    if (selection.length > 0) {
+                        $("img.highlight").removeClass("highlight");
                         let kings = ["KS", "KH", "KD", "KC"];
                         if (selection.indexOf("S") !== -1 || selection.indexOf("C") !== -1) {
-                            alert("closed");
-                            selection = "";
+                            alert("There is an attack in progress");
+                            selection = [];
                         } else if (selection.indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], [selection]);
-                            $("img[name='" + selection + "']").hide();
-                            selection = "";
+                            $("img.highlight").hide();
+                            selection = [];
                         } else {
-                            selection = "";
+                            selection = [];
                         }
                     }
                 });
@@ -420,7 +421,6 @@ $(document).ready(function() {
             }
 
             socket.on('update turn', function (hand) {
-                console.log(hand);
                 for (let i = 0; i < 5; i++) {
                     $("#card" + i).attr({
                         src: 'cards/' + hand[i] + '.svg',
