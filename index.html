@@ -64,17 +64,114 @@
           <p class="lead">v0.1.0</p>
         </div>
         <hr>
-        <h2>Placeholder</h2>
-        <p>
-          <b>Placeholder</b> - Placeholder<br>
-          <b>Placeholder</b> - Placeholder<br>
-          <b>Placeholder</b> - Placeholder
+        <h4>Goal</h4>
+        <ul>
+          <li>The goal of this game is to attack and destroy your opponent’s Kings</li>
+          <li>Once a king takes 10 or more damage, it is flipped over</li>
+          <li>If a King takes 10 or more damage while flipped over, it is destroyed</li>
+        </ul>
+        <h4>Setup</h4>
+        <ul>
+          <li>2-4 players</li>
+          <li>Each player selects a king and puts it in front of them face-up</li>
+          <li>Jacks, Queens, and Aces are shuffled and put in a separate pile</li>
+          <li>Optionally, shuffle in Jokers and/or extra Kings with the other face cards</li>
+          <li>Shuffle the rest of the deck and deal 5 cards to each player</li>
+        </ul>
+        <h4>Gameplay</h4>
+        <p>This game consists of rounds<br>
+          During a round, any player can make a move at any time<br>
         </p>
-        <h2>Placeholder</h2>
-        <p>
-          <b>Placeholder</b> - Placeholder<br>
-          <b>Placeholder</b> - Placeholder
-        </p>
+        <strong>Attacking</strong>
+        <ul>
+          <li>A player can only take damage once per turn</li>
+          <li>The player takes a Spade or Club card out of his/her hand and places it in front of the King they wish to attack</li>
+          <li>The defender can choose to heal before taking damage, take the damage, heal the attack, or counterattack</li>
+          <li>When taking damage, the damage taken is equal to the number on the attacking card</li>
+          <li>If the damage taken causes the King to have over 10 damage, it is flipped over and all damage is cleared</li>
+          <li>If it is already flipped over, it is destroyed</li>
+          <li>After taking damage, if the King is not flipped over or destroyed, the defender can immediately heal using any heart cards in their hand</li>
+          <li>If the player chooses to heal the attack, he/she can play a heart card from their hand and take damage equal to the difference between the attacking number and healing number</li>
+          <li>If the healing number is equal to or greater than the attacking number, no damage is taken or healed</li>
+          <li>NOTE: IF NO DAMAGE IS TAKEN, THE PLAYER CAN BE ATTACKED AGAIN IN THE SAME ROUND</li>
+          <li>If the player chooses to counterattack, they can play a Spade or Club from their own hand greater than or equal to the number of the attacking card</li>
+          <li>If the counterattack number is equal to the attacking number, no damage is taken</li>
+          <li>If the counterattack number is greater than the attacking number, the defender then attacks the attacker with an attack equal to the the counterattack</li>
+          <li>All attacking/defending cards are discarded after being played</li>
+        </ul>
+        <strong>Healing</strong>
+        <ul>
+          <li>A player can heal as much as they want at any time during the round</li>
+          <li>Playing a heart card heals the player by the number on the card</li>
+          <li>Normal heart cards cannot flip up a flipped-over King</li>
+          <li>The Heart card is discarded after being played</li>
+        </ul>
+        <strong>Buying</strong>
+        <ul>
+          <li>A player can buy as much as they want at any time during the round</li>
+          <li>Discarding Diamonds whose values add up to 10 or more allows the player to draw one card from the special card pile</li>
+          <li>After drawing, the player looks at it and either uses it or places it face-down in front of their King</li>
+        </ul>
+        <strong>After the Round</strong>
+        <ul>
+          <li>Players may discard unwanted cards</li>
+          <li>Shuffle discard piles for deck and special cards if needed</li>
+          <li>All players draw cards until they have 5 cards in their hands</li>
+          <li>Start the next round</li>
+        </ul>
+        <h4>Card Descriptions</h4>
+        <strong>Non-Face Cards</strong>
+        <ul>
+          <li>Spades/Clubs
+            <ul>
+              <li>Used for Attacking</li>
+            </ul>
+          </li>
+          <li>Hearts
+            <ul>
+              <li>Used for Healing</li>
+            </ul>
+          </li>
+          <li>Diamonds
+            <ul>
+              <li>Used for Buying Special Cards</li>
+            </ul>
+          </li>
+        </ul>
+        <strong>Special Cards</strong>
+        <ul>
+          <li>Queens
+            <ul>
+              <li>All Queens heal 10 health</li>
+              <li>Using a Queen while full health but flipped over flips you back face-up</li>
+            </ul>
+          </li>
+          <li>Jacks
+            <ul>
+              <li>Jack of Spades deals 10 damage, unhealable by hearts (can be blocked by queen/healed by Jack of Hearts)</li>
+              <li>Jack of Clubs destroys all Queens of the targeted player</li>
+              <li>Jack of Hearts fully heals your King and flips it face-up if it is flipped over</li>
+              <li>Jack of Diamonds requires each player to pay a 10-diamond tax before they can attack the player who played it</li>
+            </ul>
+          </li>
+          <li>Aces
+            <ul>
+              <li>Once an Ace is flipped face-up, the player that own it can place cards of the same suit as the Ace on top of the Ace, freeing up space in their hand for more cards</li>
+              <li>A player can attack using more than one card at a time if all cards are on top of the same Ace</li>
+              <li>For example, if a player has the Ace of spades and has the 6 and 7 of Spades stacked on it, he/she can attack with both at once for a 13 damage attack</li>
+              <li>In dire situations, a player can use the Ace - it counts as a 10 of whatever suit the Ace is</li>
+            </ul>
+          </li>
+          <li>Extra Kings and Jokers that are optionally added to the deck do nothing</li>
+        </ul>
+        <h4>Tips</h4>
+        <ul>
+          <li>Avoid healing an entire attack if possible - this allows you to be attacked again in the same round - try to take damage first and heal after, or use a Heart card with a lower number than the attack to take little damage</li>
+          <li>If you are flipped over and have a Queen, prioritize healing yourself to full and using the Queen at full HP to flip face-up as fast as possible</li>
+          <li>Aces are very strong - the Ace of Diamonds in particular. Try hoarding all the Diamonds so no one can buy any special cards</li>
+          <li>Save the Jack of Hearts until facing an attack that will destroy you and you have no other way of defending</li>
+          <li>When you draw a King or Joker, play it like any normal special card face down behind your King as a bluff</li>
+        </ul>
       </div>
       <div id="gandalf" class="tab-pane fade">
         <div align="center">
