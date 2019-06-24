@@ -133,11 +133,17 @@ class Room {
     }
 
     getRoomInfo(username) {
+        let specials = {};
+        for (let player of this.players) {
+            if (player === username) specials[player] = this.specials[player];
+            else specials[player] = Array(this.specials[player].length).fill("Back");
+        }
+
         return {
             "players": this.players,
             "size": this.size,
             "hand": this.hands[username],
-            "specials": this.specials,
+            "specials": specials,
             "state": this.state,
             "status": this.status,
             "attack": this.attack
