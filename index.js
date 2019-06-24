@@ -146,6 +146,13 @@ io.on('connection', function(socket) {
             io.to(ids[user]).emit('start game', Rooms(roomName).gameNumber, Rooms(roomName).getRoomInfo(user));
         }
     });
+
+    socket.on('buy', function (username, roomName, cards) {
+        let room = Rooms(roomName);
+        if (!cards.every(function (card) { return room.hands[username].includes(card) }) || getStrength(cards) < 10) return;
+        room.buy(username);
+        room.discard(username, cards);
+    });
     
     socket.on('use cards', function (roomName, source, target, cards, callback) {
         let room = Rooms(roomName);

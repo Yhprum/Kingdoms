@@ -14,8 +14,9 @@ class Room {
         this.inProgress = false;
         this.gameNumber = gameNumber++;
         this.deck = undefined;
-        this.specials = undefined;
+        this.specialDeck = undefined;
         this.hands = {};
+        this.specials = {};
         this.status = {};
         this.counter = new Set();
     }
@@ -34,9 +35,9 @@ class Room {
 
     startGame() {
         this.deck = new Deck("numbers");
-        this.specials = new Deck("specials");
+        this.specialDeck = new Deck("specials");
         this.deck.shuffle();
-        this.specials.shuffle();
+        this.specialDeck.shuffle();
         for (let i = this.players.length - 1; i >= 0; i--) {
             this.hands[this.players[i]] = this.deck.deal(5);
             this.status[this.players[i]] = {
@@ -45,6 +46,7 @@ class Room {
                 "damaged": false,
                 "alive": true
             };
+            this.specials[this.players[i]] = [];
         }
         this.size = this.players.length;
         this.state = GameState.OPEN;
@@ -86,6 +88,10 @@ class Room {
         let user = this.status[username];
         user.hp += num;
         if (user.hp > 10) user.hp = 10;
+    }
+
+    buy(username) {
+        this.specials[username].push(this.specialDeck.draw());
     }
 
     useQueen(username) {

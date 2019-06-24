@@ -11,6 +11,7 @@ $(document).ready(function() {
     var $chatForm = $("#chatForm");
     var $b1;
     var $b2;
+    var $b3;
     var $atk;
 
     var hash = window.location.hash;
@@ -175,6 +176,7 @@ $(document).ready(function() {
                 // Instantiate game screen vars
                 $b1 = $("#gameButton1");
                 $b2 = $("#gameButton2");
+                $b3 = $("#gameButton3");
                 $atk = $("#attack");
 
                 document.getElementById("chatName").innerText = name;
@@ -262,6 +264,7 @@ $(document).ready(function() {
                 $b1.off("click");
                 $b2.hide();
                 $b2.off("click");
+                $b3.off("click");
             }
 
             function gameStateOpen() {
@@ -271,12 +274,19 @@ $(document).ready(function() {
                 $b2.click(() => {
                     socket.emit('end turn', name, roomname);
                 });
+                $b3.click(() => {
+                    socket.emit('buy', name, roomname, selection);
+                    $("img.highlight").hide();
+                    selection = [];
+                    $b3.prop("disabled", true);
+                });
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
                     if (selection.includes(card)) {
                         selection.splice(selection.indexOf(card), 1);
                         $("img[name='" + card + "']").removeClass("highlight");
+                        if (card.indexOf("D") !== -1 && getStrength(selection) < 10) $b3.prop("disabled", true);
                     } else if (card.indexOf("D") !== -1) {
                         if (selection.length === 0 || selection[0].indexOf("D") === -1) {
                             selection = [card];
@@ -288,12 +298,17 @@ $(document).ready(function() {
                             selection.push(card);
                             $(this).addClass("highlight");
                         }
+                        if (getStrength(selection) >= 10) {
+                            $b3.prop("disabled", false);
+                        } else {
+                            $b3.prop("disabled", true);
+                        }
                     } else {
                         selection = [card];
                         $("img.highlight").removeClass("highlight");
                         $(this).addClass("highlight");
+                        $b3.prop("disabled", true);
                     }
-                    console.log(selection)
                 });
 
                 $(".king img").click(function () {
