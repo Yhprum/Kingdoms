@@ -191,7 +191,7 @@ $(document).ready(function() {
                 let kings = ["KS", "KH", "KD", "KC"];
                 for (let i = 0; i < gameInfo.size; i++) { // populate kings/hp
                     $("#king" + i).attr({
-                        src: 'cards/Back.svg',
+                        src: 'cards/' + kings[(i + myIndex) % gameInfo.size] + '.svg',
                         name: kings[(i + myIndex) % gameInfo.size]
                     });
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
@@ -232,7 +232,7 @@ $(document).ready(function() {
                 let kings = ["KS", "KH", "KD", "KC"];
                 for (let i = 0; i < gameInfo.size; i++) { // populate kings/hp
                     let index = (i + myIndex) % gameInfo.size;
-                    let king = gameInfo.status[gameInfo.players[index]].flipped ? kings[index] : "Back";
+                    let king = !gameInfo.status[gameInfo.players[index]].flipped ? kings[index] : "Back";
                     $("#king" + i).attr({
                         src: 'cards/' + king + '.svg',
                         name: kings[(i + myIndex) % gameInfo.size]

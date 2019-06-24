@@ -41,7 +41,7 @@ class Room {
         for (let i = this.players.length - 1; i >= 0; i--) {
             this.hands[this.players[i]] = this.deck.deal(5);
             this.status[this.players[i]] = {
-                "hp": 7,
+                "hp": 10,
                 "flipped": false,
                 "damaged": false,
                 "alive": true
