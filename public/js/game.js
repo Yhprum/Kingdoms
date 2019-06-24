@@ -232,11 +232,18 @@ $(document).ready(function() {
                         src: 'cards/' + king + '.svg',
                         name: kings[(i + myIndex) % gameInfo.size]
                     });
-                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
-                }
 
-                for (let i = 0; i < gameInfo.size; i++) { // update hp
-                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
+                    document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[index]].hp;
+
+                    document.getElementById("special0").innerHTML = "";
+                    for (let special of gameInfo.specials[gameInfo.players[index]]) {
+                        let $col = $("<div/>", {
+                            'class': 'barno special col'
+                        }).append($("<img/>", {
+                            'src': 'cards/' + special + '.svg',
+                            'name': special
+                        })).appendTo("#special0");
+                    }
                 }
 
                 clear();

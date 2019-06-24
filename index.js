@@ -152,6 +152,7 @@ io.on('connection', function(socket) {
         if (!cards.every(function (card) { return room.hands[username].includes(card) }) || getStrength(cards) < 10) return;
         room.buy(username);
         room.discard(username, cards);
+        updateState(roomName);
     });
     
     socket.on('use cards', function (roomName, source, target, cards, callback) {

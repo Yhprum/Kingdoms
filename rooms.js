@@ -137,6 +137,7 @@ class Room {
             "players": this.players,
             "size": this.size,
             "hand": this.hands[username],
+            "specials": this.specials,
             "state": this.state,
             "status": this.status,
             "attack": this.attack

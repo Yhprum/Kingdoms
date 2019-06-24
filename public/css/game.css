@@ -138,6 +138,29 @@ body .barno {
     height: 15%;
 }
 
+.king {
+    position: absolute;
+    width: 100%;
+}
+
+.king span {
+    position: absolute;
+}
+
+.special-cards {
+    height: 100%;
+}
+
+.special {
+    height: 100%;
+    padding: 0;
+}
+
+.special img {
+    max-height: 93%;
+    width: unset;
+}
+
 .player-bottom {
     bottom: 0;
 }
@@ -146,8 +169,8 @@ body .barno {
     transform: rotate(180deg);
 }
 
-.player-area .barno img {
-    width: 25% !important;
+.player-area .king img {
+    width: 20% !important;
     margin-top: -200px;
 }
 
