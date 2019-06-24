@@ -222,6 +222,11 @@ $(document).ready(function() {
 
             socket.on('update state', function (info) {
                 gameInfo = info;
+
+                $(".special-cards").each((index, element) => {
+                    element.innerHTML = "";
+                });
+
                 let myIndex = gameInfo.players.indexOf(name);
 
                 let kings = ["KS", "KH", "KD", "KC"];
@@ -235,14 +240,13 @@ $(document).ready(function() {
 
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[index]].hp;
 
-                    document.getElementById("special0").innerHTML = "";
                     for (let special of gameInfo.specials[gameInfo.players[index]]) {
-                        let $col = $("<div/>", {
-                            'class': 'barno special col'
+                        $("<div/>", {
+                            'class': 'barno special col-2'
                         }).append($("<img/>", {
                             'src': 'cards/' + special + '.svg',
                             'name': special
-                        })).appendTo("#special0");
+                        })).appendTo("#special" + i);
                     }
                 }
 
@@ -261,8 +265,7 @@ $(document).ready(function() {
             });
 
             function clear() {
-                // selection = "";
-                // $("img[name='" + selection + "']").removeClass("highlight");
+                $("img.highlight").removeClass("highlight");
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
                 $atk.hide();
