@@ -321,10 +321,23 @@ $(document).ready(function() {
                     }
                 });
 
+                $("#special0 img").click(function(e){
+                    // debugger;
+                    let card = this.name;
+                    selection = [card, "special"];
+                    $("img.highlight").removeClass("highlight");
+                    $(this).addClass("highlight");
+                });
+
                 $(".king img").click(function () {
                     if (selection.length > 0) {
+
                         let kings = ["KS", "KH", "KD", "KC"];
-                        if (selection[0].indexOf("S") !== -1 || selection[0].indexOf("C") !== -1) {
+                        if (selection[1] === "special") {
+                            socket.emit('use special', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                            $("img.highlight").hide();
+                            selection = [];
+                        } else if (selection[0].indexOf("S") !== -1 || selection[0].indexOf("C") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection, function (callback) {
                                 if (callback) {
                                     $("img.highlight").hide();

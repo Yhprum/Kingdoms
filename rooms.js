@@ -94,20 +94,23 @@ class Room {
         this.specials[username].push(this.specialDeck.draw());
     }
 
-    useQueen(username) {
+    useQueen(username, card) {
         let user = this.status[username];
         if (user.hp !== 10) user.hp = 10;
         else (user.flipped = false);
+        this.specials[username].splice(this.specials[username].indexOf(card), 1);
     }
 
     fullHeal(username) {
         let user = this.status[username];
         user.hp = 10;
         user.flipped = false;
+        this.specials[username].splice(this.specials[username].indexOf("JH"), 1);
     }
 
-    jackOfClubs(target) {
-        // Delete all queens from target's pile
+    jackOfClubs(source, target) {
+        this.specials[target] = this.specials[target].filter(item => item.indexOf("Q") === -1);
+        this.specials[source].splice(this.specials[source].indexOf("JC"), 1);
     }
 
     discard(username, cards) {

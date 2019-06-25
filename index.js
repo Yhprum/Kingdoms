@@ -178,12 +178,15 @@ io.on('connection', function(socket) {
         }
     });
 
-    socket.on('use special', function (roomName, source, target, card) {
+    socket.on('use special', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
-        if (!room.hands[source].includes(card)) return; // Trying to cheat lol
-        if (card.indexOf("Q")) {
-            room.useQueen(target);
-        } else if (card.indexOf("A")) {
+        let card = cards[0];
+        console.log(card);
+        if (!room.specials[source].includes(card)) return; // Trying to cheat lol
+
+        if (card.indexOf("Q") !== -1) {
+            room.useQueen(target, card);
+        } else if (card.indexOf("A") !== -1) {
             // Ace
         } else if (card === "JS") {
             // Jack of Spades
@@ -192,10 +195,12 @@ io.on('connection', function(socket) {
         } else if (card === "JD") {
             // Jack of Diamonds
         } else if (card === "JC") {
-            room.jackOfClubs(target);
+            room.jackOfClubs(source, target);
         } else {
             // King/Joker
         }
+        room.discard(source, [card]);
+        updateState(roomName);
     });
 
     socket.on('update attack', function (roomName, username, cards) {
