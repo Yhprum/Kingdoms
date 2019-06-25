@@ -181,7 +181,6 @@ io.on('connection', function(socket) {
     socket.on('use special', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
         let card = cards[0];
-        console.log(card);
         if (!room.specials[source].includes(card)) return; // Trying to cheat lol
 
         if (card.indexOf("Q") !== -1) {
@@ -189,7 +188,7 @@ io.on('connection', function(socket) {
         } else if (card.indexOf("A") !== -1) {
             // Ace
         } else if (card === "JS") {
-            // Jack of Spades
+            room.jackOfSpades(source, target);
         } else if (card === "JH") {
             room.fullHeal(target);
         } else if (card === "JD") {
@@ -199,7 +198,7 @@ io.on('connection', function(socket) {
         } else {
             // King/Joker
         }
-        room.discard(source, [card]);
+        // room.discard(source, [card]);
         updateState(roomName);
     });
 
@@ -225,6 +224,19 @@ io.on('connection', function(socket) {
             }
             room.discard(username, cards);
         }
+        updateState(roomName);
+    });
+
+    socket.on('counter JS', function (roomName, username, card) {
+        let room = Rooms(roomName);
+        if (!room.specials[username].includes(card)) return;
+
+        if (card.indexOf("Q") !== -1) {
+            room.specials[username].splice(room.specials[username].indexOf(card), 1);
+        } else if (card === "JH") {
+            room.fullHeal(username);
+        }
+        room.state = 1;
         updateState(roomName);
     });
 

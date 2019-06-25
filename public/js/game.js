@@ -196,6 +196,9 @@ $(document).ready(function() {
                     });
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
+                for (let i = gameInfo.size; i < 4; i++) {
+                    $("#player" + i).remove();
+                }
 
                 clear();
                 gameStateOpen();
@@ -322,7 +325,6 @@ $(document).ready(function() {
                 });
 
                 $("#special0 img").click(function(e){
-                    // debugger;
                     let card = this.name;
                     selection = [card, "special"];
                     $("img.highlight").removeClass("highlight");
@@ -372,10 +374,24 @@ $(document).ready(function() {
                     $b1.click(function () {
                         socket.emit('take damage', name, roomname);
                     });
+                    $b3.click(() => {
+                        socket.emit('buy', name, roomname, selection);
+                        $("img.highlight").hide();
+                        selection = [];
+                        $b3.prop("disabled", true);
+                    });
                     $atk.click(() => {
                         if (selection.length > 0) {
                             let $selection =  $("img.highlight");
-                            if (selection[0].indexOf("H") !== -1 || getStrength(selection) >= gameInfo.attack.power) {
+                            if (gameInfo.attack.power === "JS") {
+                                if (selection[0].indexOf("Q") !== -1 || selection[0] === "JH") {
+                                    socket.emit('counter JS', roomname, name, selection[0]);
+                                    $selection.hide();
+                                    selection = [];
+                                } else {
+                                    alert("You can only use a Queen or Jack of hearts against a Jack of Spades attack");
+                                }
+                            } else if (selection[0].indexOf("H") !== -1 || getStrength(selection) >= gameInfo.attack.power) {
                                 socket.emit('update attack', roomname, name, selection);
                                 $selection.hide();
                                 selection = [];
@@ -393,6 +409,7 @@ $(document).ready(function() {
                     if (selection.includes(card)) {
                         selection.splice(selection.indexOf(card), 1);
                         $("img[name='" + card + "']").removeClass("highlight");
+                        if (card.indexOf("D") !== -1 && getStrength(selection) < 10) $b3.prop("disabled", true);
                     } else if (card.indexOf("D") !== -1) {
                         if (selection.length === 0 || selection[0].indexOf("D") === -1) {
                             selection = [card];
@@ -404,11 +421,24 @@ $(document).ready(function() {
                             selection.push(card);
                             $(this).addClass("highlight");
                         }
+                        if (getStrength(selection) >= 10) {
+                            $b3.prop("disabled", false);
+                        } else {
+                            $b3.prop("disabled", true);
+                        }
                     } else {
                         selection = [card];
                         $("img.highlight").removeClass("highlight");
                         $(this).addClass("highlight");
+                        $b3.prop("disabled", true);
                     }
+                });
+
+                $("#special0 img").click(function() {
+                    let card = this.name;
+                    selection = [card, "special"];
+                    $("img.highlight").removeClass("highlight");
+                    $(this).addClass("highlight");
                 });
 
                 $(".king img").click(function () {

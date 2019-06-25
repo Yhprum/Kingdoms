@@ -70,6 +70,7 @@ class Room {
     }
 
     takeDamage(username, num) {
+        if (num === "JS") num = 10;
         let user = this.status[username];
         user.hp -= num;
         if (user.hp <= 0) {
@@ -111,6 +112,14 @@ class Room {
     jackOfClubs(source, target) {
         this.specials[target] = this.specials[target].filter(item => item.indexOf("Q") === -1);
         this.specials[source].splice(this.specials[source].indexOf("JC"), 1);
+    }
+
+    jackOfSpades(source, target) {
+        this.createAttack(source, target, "JS");
+    }
+
+    jackOfDiamonds(source) {
+
     }
 
     discard(username, cards) {
