@@ -1,5 +1,5 @@
 module.exports = class Deck {
-    constructor(type) {
+    constructor(type, double) {
         let deck = [];
         let values = [];
         if (type === "numbers") {
@@ -14,6 +14,8 @@ module.exports = class Deck {
                 deck.push(value + "" + suit);
             });
         });
+        if (double) deck.push(...deck);
+
         this.deck = deck;
         this.discardPile = [];
     }

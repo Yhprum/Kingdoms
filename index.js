@@ -55,7 +55,7 @@ io.on('connection', function(socket) {
             //more checks
         } else {
             let r = "<i>Unknown command. Type /help for a list of commands</i>"
-            io.to(usernames[[name]]).emit('chatroom message', r, room);
+            io.to(ids[name]).emit('chatroom message', r, room);
         }
     }
 
@@ -101,7 +101,7 @@ io.on('connection', function(socket) {
     function handleBarno(name, room) {
         let r = "Barno";
         for (let i = 0; i < 100; i++) r += " Barno";
-        io.to(usernames[[name]]).emit('chatroom message', r, room);
+        io.to(ids[name]).emit('chatroom message', r, room);
     }
 
     socket.on('create room', function (username, roomName, size, callback) {

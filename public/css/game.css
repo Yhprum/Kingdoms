@@ -143,6 +143,7 @@ body .barno {
 
 .king span {
     position: absolute;
+    margin-top: -155px;
 }
 
 .special-cards {

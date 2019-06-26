@@ -34,8 +34,9 @@ class Room {
     }
 
     startGame() {
-        this.deck = new Deck("numbers");
-        this.specialDeck = new Deck("specials");
+        let double = this.players.length > 2;
+        this.deck = new Deck("numbers", double);
+        this.specialDeck = new Deck("specials", false);
         this.deck.shuffle();
         this.specialDeck.shuffle();
         for (let i = this.players.length - 1; i >= 0; i--) {

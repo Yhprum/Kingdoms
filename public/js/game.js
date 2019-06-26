@@ -194,6 +194,7 @@ $(document).ready(function() {
                         src: 'cards/' + kings[(i + myIndex) % gameInfo.size] + '.svg',
                         name: kings[(i + myIndex) % gameInfo.size]
                     });
+                    document.getElementById("name" + i).innerText = gameInfo.players[(i + myIndex) % gameInfo.size];
                     document.getElementById("hp" + i).innerText = gameInfo.status[gameInfo.players[(i + myIndex) % gameInfo.size]].hp;
                 }
                 for (let i = gameInfo.size; i < 4; i++) {
