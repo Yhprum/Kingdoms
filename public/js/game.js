@@ -272,6 +272,7 @@ $(document).ready(function() {
                 $("img.highlight").removeClass("highlight");
                 $("#selections .barno img").off("click");
                 $(".king img").off("click");
+                $("#special0 img").off("click");
                 $atk.hide();
                 $atk.off("click");
                 $b1.hide();
@@ -334,31 +335,30 @@ $(document).ready(function() {
 
                 $(".king img").click(function () {
                     if (selection.length > 0) {
-
                         let kings = ["KS", "KH", "KD", "KC"];
                         if (selection[1] === "special") {
-                            socket.emit('use special', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
-                            $("img.highlight").hide();
-                            selection = [];
+                            if (selection[0] === "JS" && gameInfo.status[gameInfo.players[kings.indexOf(this.name)]].damaged) {
+                                alert("Your target has already taken damage");
+                                $("img.highlight").removeClass("highlight");
+                            } else {
+                                socket.emit('use special', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                                $("img.highlight").hide();
+                            }
                         } else if (selection[0].indexOf("S") !== -1 || selection[0].indexOf("C") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection, function (callback) {
-                                if (callback) {
-                                    $("img.highlight").hide();
-                                    selection = [];
-                                } else {
-                                    alert("Your target has already taken damage");
-                                    $("img.highlight").removeClass("highlight");
-                                    selection = [];
-                                }
-                            });
+                            if (!gameInfo.status[gameInfo.players[kings.indexOf(this.name)]].damaged) {
+                                socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                                $("img.highlight").hide();
+                            } else {
+                                alert("Your target has already taken damage");
+                                $("img.highlight").removeClass("highlight");
+                            }
                         } else if (selection[0].indexOf("H") !== -1) {
                             socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
                             $("img.highlight").hide();
-                            selection = [];
                         } else {
                             $("img.highlight").removeClass("highlight");
-                            selection = [];
                         }
+                        selection = [];
                     }
                 });
             }

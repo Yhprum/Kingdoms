@@ -117,6 +117,7 @@ class Room {
 
     jackOfSpades(source, target) {
         this.createAttack(source, target, "JS");
+        this.specials[source].splice(this.specials[source].indexOf("JS"), 1);
     }
 
     jackOfDiamonds(source) {
