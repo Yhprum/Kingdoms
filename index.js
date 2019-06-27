@@ -152,23 +152,29 @@ io.on('connection', function(socket) {
         if (!cards.every(function (card) { return room.hands[username].includes(card) }) || getStrength(cards) < 10) return;
         room.buy(username);
         room.discard(username, cards);
-        updateState(roomName);
+
+        let msg = "<b>" + username + "</b> has bought a special card";
+        updateState(roomName, msg, false);
     });
     
     socket.on('use cards', function (roomName, source, target, cards) {
         let room = Rooms(roomName);
         if (!cards.every(function (card) { return room.hands[source].includes(card) })) return; // Trying to cheat lol
 
+        let strength = getStrength(cards);
         if (type(cards[0]) === "attack" && room.state === 1 && !room.status[target].damaged) {
-            room.createAttack(source, target, getStrength(cards));
+            room.createAttack(source, target, strength);
             room.discard(source, cards);
-            updateState(roomName);
+
+            let msg = "<b>" + source + "</b> targets <b>" + target + "</b> with an attack of " + strength;
+            updateState(roomName, msg);
         } else if (type(cards[0]) === "heal") {
-            room.heal(target, getStrength(cards));
+            room.heal(target, strength);
             room.discard(source, cards);
-            updateState(roomName);
-        } else if (type(cards[0]) === "buy" && getStrength(cards) >= 10) {
-            room.discard(source, cards);
+
+            if (target === source) target = "self";
+            let msg = "<b>" + source + "</b> heals <b>" + target + "</b> by " + strength + "hp";
+            updateState(roomName, msg, false);
         }
     });
 
@@ -193,52 +199,65 @@ io.on('connection', function(socket) {
         } else {
             // King/Joker
         }
-        updateState(roomName);
+
+        if (target === source) target = "self";
+        let msg = "<b>" + source + "</b> uses " + card + "  on <b>" + target + "</b>";
+        updateState(roomName, msg, false);
     });
 
     socket.on('update attack', function (roomName, username, cards) {
         let room = Rooms(roomName);
         if (!cards.every(function (card) { return room.hands[username].includes(card) })) return;
 
+        let msg;
+        let strength = getStrength(cards);
         if (type(cards[0]) === "attack") {
-            if (getStrength(cards) === room.attack.power) {
+            if (strength === room.attack.power) {
                 room.state = 1;
                 room.discard(username, cards);
-            } else if (getStrength(cards) > room.attack.power) {
+                msg = "<b>" + username + "</b> nullifies the attack";
+            } else if (strength > room.attack.power) {
                 room.attack.target = room.attack.source;
                 room.attack.source = username;
-                room.attack.power = getStrength(cards);
+                room.attack.power = strength;
                 room.discard(username, cards);
+                msg = "<b>" + username + "</b> counters with an attack of " + strength;
             }
         } else if (type(cards[0]) === "heal") {
-            if (getStrength(cards) >= room.attack.power) {
+            if (strength >= room.attack.power) {
+                msg = "<b>" + username + "</b> nullifies the attack with hearts";
                 room.state = 1;
             } else {
-                room.attack.power -= getStrength(cards);
+                msg = "<b>" + username + "</b> weakens the attack by " + strength;
+                room.attack.power -= strength;
             }
             room.discard(username, cards);
         }
-        updateState(roomName);
+        updateState(roomName, msg, false);
     });
 
     socket.on('counter JS', function (roomName, username, card) {
         let room = Rooms(roomName);
         if (!room.specials[username].includes(card)) return;
 
+        let msg;
         if (card.indexOf("Q") !== -1) {
             room.specials[username].splice(room.specials[username].indexOf(card), 1);
+            msg = "<b>" + username + "</b> nullifies the attack with a Queen";
         } else if (card === "JH") {
             room.fullHeal(username);
+            msg = "<b>" + username + "</b> full heals with the Jack of Hearts";
         }
         room.state = 1;
-        updateState(roomName);
+        updateState(roomName, msg, false);
     });
 
     socket.on('take damage', function (username, roomName) { // TODO: get username from socket instead?
         let room = Rooms(roomName);
         if (room.attack.target === username) {
             room.takeDamage(username, room.attack.power);
-            updateState(roomName);
+            let msg = "<b>" + username + "</b> takes " + room.attack.power + " damage";
+            updateState(roomName, msg, false);
         }
     });
 
@@ -248,7 +267,7 @@ io.on('connection', function(socket) {
        if (room.counter.size === room.size) {
            room.counter.clear();
            room.endTurn();
-           updateState(roomName);
+           updateState(roomName, "discarding...", false);
        }
     });
 
@@ -262,7 +281,8 @@ io.on('connection', function(socket) {
             for (let user of room.players) {
                 io.to(ids[user]).emit('update turn', room.hands[user]);
             }
-            updateState(roomName);
+            let msg = "<b>Turn " + ++room.turn + "</b>";
+            updateState(roomName, msg, true);
         }
     });
 
@@ -291,9 +311,9 @@ io.on('connection', function(socket) {
         return Object.assign({}, ...[...map.entries()].map(([k, v]) => ({[k]: v})))
     }
 
-    function updateState(roomName) {
+    function updateState(roomName, msg, isTurn) {
         for (let user of Rooms(roomName).players) {
-            io.to(ids[user]).emit('update state', Rooms(roomName).getRoomInfo(user));
+            io.to(ids[user]).emit('update state', Rooms(roomName).getRoomInfo(user), msg, isTurn);
         }
     }
 

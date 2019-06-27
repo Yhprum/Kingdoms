@@ -52,6 +52,7 @@ class Room {
         this.size = this.players.length;
         this.state = GameState.OPEN;
         this.attack = {};
+        this.turn = 1;
     }
 
     endTurn() {

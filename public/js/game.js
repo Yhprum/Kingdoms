@@ -179,6 +179,13 @@ $(document).ready(function() {
                 $b3 = $("#gameButton3");
                 $atk = $("#attack");
 
+                let row = document.createElement("tr");
+                row.classList.add("turn-row");
+                let text = document.createElement("td");
+                text.innerHTML = "Turn 1";
+                row.appendChild(text);
+                document.getElementById("history").appendChild(row);
+
                 document.getElementById("chatName").innerText = name;
                 for (let i = 0; i < 5; i++) { // populate your cards
                     $("#card" + i).attr({
@@ -224,7 +231,7 @@ $(document).ready(function() {
                 });
             });
 
-            socket.on('update state', function (info) {
+            socket.on('update state', function (info, msg, isTurn) {
                 gameInfo = info;
 
                 $(".special-cards").each((index, element) => {
@@ -253,6 +260,13 @@ $(document).ready(function() {
                         })).appendTo("#special" + i);
                     }
                 }
+
+                let row = document.createElement("tr");
+                if (isTurn) row.classList.add("turn-row");
+                let text = document.createElement("td");
+                text.innerHTML = msg;
+                row.appendChild(text);
+                document.getElementById("history").appendChild(row); // TODO: Scroll history to bottom
 
                 clear();
                 switch (gameInfo.state) {
