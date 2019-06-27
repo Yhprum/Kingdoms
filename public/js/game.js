@@ -408,9 +408,9 @@ $(document).ready(function() {
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
-                    if (selection.includes(card)) {
+                    if (selection.includes(card) && this.classList.contains("highlight")) {
                         selection.splice(selection.indexOf(card), 1);
-                        $("img[name='" + card + "']").removeClass("highlight");
+                        $(this).removeClass("highlight");
                         if (card.indexOf("D") !== -1 && getStrength(selection) < 10) $b3.prop("disabled", true);
                     } else if (card.indexOf("D") !== -1) {
                         if (selection.length === 0 || selection[0].indexOf("D") === -1) {
