@@ -74,7 +74,7 @@ io.on('connection', function(socket) {
         } else {
             r = "<i>Invalid syntax. Correct syntax is /help [command name]</i>"
         }
-        io.to(usernames[[name]]).emit('chatroom message', r, room);
+        io.to(ids[name]).emit('chatroom message', r, room);
     }
 
     function handleBan(name, msg, room) {
@@ -87,7 +87,7 @@ io.on('connection', function(socket) {
         } else {
             r = "<i>Invalid syntax. Correct syntax is /ban [username] [time in seconds] or /ban [username]</i>"
         }
-        io.to(usernames[[name]]).emit('chatroom message', r, room);
+        io.to(ids[name]).emit('chatroom message', r, room);
     }
 
     function ban(name) {
