@@ -298,9 +298,9 @@ $(document).ready(function() {
                 $("#selections .barno img").click(function() {
                     let card = this.name;
 
-                    if (selection.includes(card)) {
+                    if (selection.includes(card) && this.classList.contains("highlight")) {
                         selection.splice(selection.indexOf(card), 1);
-                        $("img[name='" + card + "']").removeClass("highlight");
+                        $(this).removeClass("highlight");
                         if (card.indexOf("D") !== -1 && getStrength(selection) < 10) $b3.prop("disabled", true);
                     } else if (card.indexOf("D") !== -1) {
                         if (selection.length === 0 || selection[0].indexOf("D") === -1) {
@@ -336,24 +336,25 @@ $(document).ready(function() {
                 $(".king img").click(function () {
                     if (selection.length > 0) {
                         let kings = ["KS", "KH", "KD", "KC"];
+                        let target = gameInfo.players[kings.indexOf(this.name)];
                         if (selection[1] === "special") {
-                            if (selection[0] === "JS" && gameInfo.status[gameInfo.players[kings.indexOf(this.name)]].damaged) {
+                            if (selection[0] === "JS" && gameInfo.status[target].damaged) {
                                 alert("Your target has already taken damage");
                                 $("img.highlight").removeClass("highlight");
                             } else {
-                                socket.emit('use special', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                                socket.emit('use special', roomname, name, target, selection);
                                 $("img.highlight").hide();
                             }
                         } else if (selection[0].indexOf("S") !== -1 || selection[0].indexOf("C") !== -1) {
                             if (!gameInfo.status[gameInfo.players[kings.indexOf(this.name)]].damaged) {
-                                socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                                socket.emit('use cards', roomname, name, target, selection);
                                 $("img.highlight").hide();
                             } else {
                                 alert("Your target has already taken damage");
                                 $("img.highlight").removeClass("highlight");
                             }
                         } else if (selection[0].indexOf("H") !== -1) {
-                            socket.emit('use cards', roomname, name, gameInfo.players[kings.indexOf(this.name)], selection);
+                            socket.emit('use cards', roomname, name, target, selection);
                             $("img.highlight").hide();
                         } else {
                             $("img.highlight").removeClass("highlight");
